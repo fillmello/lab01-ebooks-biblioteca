@@ -1,3 +1,22 @@
 @startuml casos_de_uso_ebooks
+left to right direction
+skinparam packageStyle rectangle
+
+actor Aluno
+actor Bibliotecario as "Bibliotecário"
+
+rectangle "Sistema de Gestão de eBooks" {
+  usecase "Adicionar eBook a estante" as UC02
+  usecase "Remover eBook da estante" as UC03
+  usecase "Consultar estante pessoal" as UC04
+  usecase "Consultar alunos com um eBook" as UC05
+  usecase "Cadastrar eBook" as UC06
+}
+
+Aluno --> UC02
+Aluno --> UC03
+Aluno --> UC04
+Bibliotecario --> UC05
+Bibliotecario --> UC06
 
 @enduml
