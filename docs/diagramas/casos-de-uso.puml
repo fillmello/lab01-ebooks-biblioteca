@@ -6,6 +6,7 @@ actor Aluno
 actor Bibliotecario as "Bibliotecário"
 
 rectangle "Sistema de Gestão de eBooks" {
+  usecase "Realizar Login" as UC01
   usecase "Adicionar eBook a estante" as UC02
   usecase "Remover eBook da estante" as UC03
   usecase "Consultar estante pessoal" as UC04
@@ -13,9 +14,11 @@ rectangle "Sistema de Gestão de eBooks" {
   usecase "Cadastrar eBook" as UC06
 }
 
+Aluno --> UC01
 Aluno --> UC02
 Aluno --> UC03
 Aluno --> UC04
+Bibliotecario --> UC01
 Bibliotecario --> UC05
 Bibliotecario --> UC06
 
