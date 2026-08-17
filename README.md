@@ -19,7 +19,7 @@ no semestre seguinte, e permite aos bibliotecários acompanhar quais alunos est�
 - Histórias de usuário: [docs/historias-de-usuario.md](docs/historias-de-usuario.md)
 - Contribuições semanais: [docs/contribuicoes/](docs/contribuicoes/)
 
-![Diagrama de casos de uso](docs/diagramas/DiagramaCasoUsoAstah.png)
+![Diagrama de casos de uso](docs/diagramas/DiagramaCasoUsoAstah.jpeg)
 
 A modelagem geral foi feita primeiro no Astah
 ([DiagramaCasoUsoAstah.jpeg](docs/diagramas/DiagramaCasoUsoAstah.jpeg)), para discussão dos casos de uso,
