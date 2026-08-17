@@ -1,3 +1,36 @@
 @startuml casos_de_uso_ebooks
+left to right direction
+skinparam packageStyle rectangle
+skinparam shadowing false
+skinparam actorStyle awesome
+
+actor "Aluno" as Aluno
+actor "Bibliotecário" as Bibliotecario
+
+rectangle "Sistema de Gestão de eBooks" {
+  usecase "Realizar login" as UC01
+  usecase "Adicionar eBook à estante" as UC02
+  usecase "Remover eBook da estante" as UC03
+  usecase "Acessar eBook" as UC04
+  usecase "Cadastrar eBook" as UC05
+  usecase "Consultar alunos com um eBook" as UC06
+  usecase "Renovar catálogo do semestre" as UC07
+  usecase "Registrar estatística de uso" as UC08
+}
+
+' --- Associações do Aluno ---
+Aluno --> UC01
+Aluno --> UC02
+Aluno --> UC03
+Aluno --> UC04
+
+' --- Associações do Bibliotecário ---
+Bibliotecario --> UC01
+Bibliotecario --> UC05
+Bibliotecario --> UC06
+Bibliotecario --> UC07
+
+' --- Adicionar eBook sempre registra a estatística de uso (sub-fluxo interno) ---
+UC02 ..> UC08 : <<include>>
 
 @enduml
