@@ -15,14 +15,14 @@ no semestre seguinte, e permite aos bibliotecários acompanhar quais alunos est�
 
 ## Documentação
 
-- Diagrama de casos de uso: [docs/diagramas/casos-de-uso.puml](docs/diagramas/casos-de-uso.puml) ([imagem](docs/diagramas/casos-de-uso.png))
+- Diagrama de casos de uso: [docs/diagramas/casos-de-uso.puml](docs/diagramas/casos-de-uso.puml) ([imagem](docs/diagramas/DiagramaCasoUsoPuml.png))
 - Histórias de usuário: [docs/historias-de-usuario.md](docs/historias-de-usuario.md)
 - Contribuições semanais: [docs/contribuicoes/](docs/contribuicoes/)
 
-![Diagrama de casos de uso](docs/diagramas/casos-de-uso.png)
+![Diagrama de casos de uso](docs/diagramas/DiagramaCasoUsoPuml.png)
 
 A modelagem geral foi feita primeiro no Astah
-([DiagramaCasoDeUso.jpeg](docs/diagramas/DiagramaCasoDeUso.jpeg)), para discussão dos casos de uso,
+([DiagramaCasoUsoAstah.jpeg](docs/diagramas/DiagramaCasoUsoAstah.jpeg)), para discussão dos casos de uso,
 e depois transformada em PlantUML.
 
 ## Distribuição de tarefas
