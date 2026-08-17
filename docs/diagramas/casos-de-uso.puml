@@ -6,6 +6,7 @@ skinparam actorStyle awesome
 
 actor "Aluno" as Aluno
 actor "Bibliotecário" as Bibliotecario
+actor "Sistema de Estatísticas de Uso" as Estatisticas
 
 rectangle "Sistema de Gestão de eBooks" {
   usecase "Realizar login" as UC01
@@ -14,8 +15,8 @@ rectangle "Sistema de Gestão de eBooks" {
   usecase "Acessar eBook" as UC04
   usecase "Cadastrar eBook" as UC05
   usecase "Consultar alunos com um eBook" as UC06
-  usecase "Renovar catálogo do semestre" as UC07
-  usecase "Registrar estatística de uso" as UC08
+  usecase "Notificar sistema de\nestatísticas de uso" as UC07
+  usecase "Renovar catálogo do semestre" as UC08
 }
 
 ' --- Associações do Aluno ---
@@ -28,9 +29,19 @@ Aluno --> UC04
 Bibliotecario --> UC01
 Bibliotecario --> UC05
 Bibliotecario --> UC06
-Bibliotecario --> UC07
+Bibliotecario --> UC08
 
-' --- Adicionar eBook sempre registra a estatística de uso (sub-fluxo interno) ---
-UC02 ..> UC08 : <<include>>
+' --- Ator externo notificado pelo sistema ---
+UC07 --> Estatisticas
+
+' --- Login obrigatório: todo acesso ao sistema valida a senha do usuário ---
+UC02 ..> UC01 : <<include>>
+UC03 ..> UC01 : <<include>>
+UC04 ..> UC01 : <<include>>
+UC05 ..> UC01 : <<include>>
+UC06 ..> UC01 : <<include>>
+
+' --- Adicionar eBook sempre notifica o sistema de estatísticas de uso ---
+UC02 ..> UC07 : <<include>>
 
 @enduml
