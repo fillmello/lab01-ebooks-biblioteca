@@ -10,19 +10,20 @@ sistema, usada apenas na HU01, que vale para os dois perfis).
 
 ## Distribuição por integrante
 
-Cada história corresponde ao caso de uso de mesmo número em
-[casos-de-uso.puml](diagramas/casos-de-uso.puml).
+Nesta sprint, **Filipe Melo** ficou responsável pelo diagrama de casos de uso em PlantUML
+([casos-de-uso.puml](diagramas/casos-de-uso.puml)) e **João Victor** pelas histórias de usuário
+deste arquivo. Cada história corresponde ao caso de uso de mesmo número.
 
-| ID | Caso de uso / História | Ator | Responsável |
-| --- | --- | --- | --- |
-| 01 | Realizar login | Usuário do sistema | Filipe Melo |
-| 02 | Adicionar eBook à estante | Aluno | Filipe Melo |
-| 03 | Remover eBook da estante | Aluno | Filipe Melo |
-| 04 | Acessar eBook | Aluno | Filipe Melo |
-| 05 | Cadastrar eBook | Bibliotecário | João Victor |
-| 06 | Consultar alunos com um eBook | Bibliotecário | João Victor |
-| 07 | Registrar estatística de uso | Bibliotecário | João Victor |
-| 08 | Renovar catálogo do semestre | Bibliotecário | João Victor |
+| ID | Caso de uso / História | Ator |
+| --- | --- | --- |
+| 01 | Realizar login | Usuário do sistema |
+| 02 | Adicionar eBook à estante | Aluno |
+| 03 | Remover eBook da estante | Aluno |
+| 04 | Acessar eBook | Aluno |
+| 05 | Cadastrar eBook | Bibliotecário |
+| 06 | Consultar alunos com um eBook | Bibliotecário |
+| 07 | Registrar estatística de uso | Bibliotecário |
+| 08 | Renovar catálogo do semestre | Bibliotecário |
 
 ## HU01 — Realizar login
 

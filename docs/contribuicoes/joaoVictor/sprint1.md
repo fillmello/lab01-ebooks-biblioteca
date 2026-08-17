@@ -4,9 +4,9 @@
 > individualmente. A rubrica pede contribuição **e** decisões descritas, em **todas** as semanas da
 > sprint. Substitua os trechos entre colchetes e apague este aviso.
 >
-> Sua responsabilidade acordada na distribuição (ver [historias-de-usuario.md](../../historias-de-usuario.md)):
-> **UC05/HU05 Cadastrar eBook**, **UC06/HU06 Consultar alunos com um eBook**,
-> **UC07/HU07 Registrar estatística de uso**, **UC08/HU08 Renovar catálogo do semestre**.
+> Sua responsabilidade acordada na distribuição: as **histórias de usuário HU01 a HU08**, em
+> [historias-de-usuario.md](../../historias-de-usuario.md). O diagrama de casos de uso ficou com o
+> Filipe.
 
 ## Semana 1 (10/08/2026)
 
@@ -19,8 +19,8 @@
 **Contribuição:** [o que você fez nesta semana]
 
 **Decisões:** [que escolhas você tomou e por quê. Exemplos do que dá para defender na sua parte:
-por que "Renovar catálogo do semestre" é caso de uso do bibliotecário e não uma rotina automática;
-por que "Consultar alunos com um eBook" é um caso de uso e não um relatório interno]
+por que adotou personas nomeadas (Ana, Bruno, Carla) em vez de só "aluno" e "bibliotecário"; por
+que cada história explicita o benefício; como garantiu uma história por caso de uso]
 
 **Uso de IA:** [se usou, diga qual ferramenta, em que etapa, e o que revisou ou alterou
 manualmente. Se não usou, registre que não usou]

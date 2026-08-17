@@ -19,12 +19,10 @@ da branch `main` via ruleset do GitHub.
 
 ## Semana 2 (17/08/2026)
 
-**Contribuição:** modelei o Diagrama de Casos de Uso em PlantUML
-(`docs/diagramas/casos-de-uso.puml`), com os 8 casos de uso do sistema, e escrevi as histórias de
-usuário correspondentes em `docs/historias-de-usuario.md`. Sou responsável especificamente por
-**UC01/HU01 (Realizar login)**, **UC02/HU02 (Adicionar eBook à estante)**, **UC03/HU03 (Remover
-eBook da estante)** e **UC04/HU04 (Acessar eBook)**. Também exportei a imagem do diagrama e
-atualizei o README com a descrição do sistema e os links da documentação.
+**Contribuição:** fiquei responsável pelo Diagrama de Casos de Uso. Identifiquei os atores e
+modelei os 8 casos de uso do sistema em PlantUML (`docs/diagramas/casos-de-uso.puml`), exportei a
+imagem do diagrama e atualizei o README com a descrição do sistema e os links da documentação. As
+histórias de usuário correspondentes ficaram sob responsabilidade do João Victor.
 
 **Decisões:**
 
@@ -40,8 +38,9 @@ atualizei o README com a descrição do sistema e os links da documentação.
   regras de negócio são distintas (limite de 4+2 na adição).
 - Não modelei "Validar senha no banco" como caso de uso: é detalhe de implementação de "Realizar
   login", não intenção do ator.
-- Escrevi as histórias com personas nomeadas (Ana, Bruno, Carla) e papel explícito, mantendo cada
-  persona sempre no mesmo papel, para não confundir quem é o ator de cada história.
+- Numerei os casos de uso de UC01 a UC08 na mesma ordem das histórias escritas pelo João, para que
+  cada história tenha um caso de uso correspondente de mesmo número e a rastreabilidade entre os
+  dois documentos fique direta.
 
 **Uso de IA:** usei o Claude (Anthropic) para revisar a consistência entre o diagrama e as
 histórias de usuário, para gerar a estrutura inicial dos arquivos de documentação e para revisar a
