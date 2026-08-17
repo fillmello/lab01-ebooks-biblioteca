@@ -15,11 +15,11 @@ no semestre seguinte, e permite aos bibliotecários acompanhar quais alunos est�
 
 ## Documentação
 
-- Diagrama de casos de uso: [docs/diagramas/casos-de-uso.puml](docs/diagramas/casos-de-uso.puml) ([imagem](docs/diagramas/DiagramaCasoUsoPuml.png))
+- Diagrama de casos de uso: [docs/diagramas/casos-de-uso.puml](docs/diagramas/casos-de-uso.puml) 
 - Histórias de usuário: [docs/historias-de-usuario.md](docs/historias-de-usuario.md)
 - Contribuições semanais: [docs/contribuicoes/](docs/contribuicoes/)
 
-![Diagrama de casos de uso](docs/diagramas/DiagramaCasoUsoPuml.png)
+![Diagrama de casos de uso](docs/diagramas/DiagramaCasoUsoAstah.png)
 
 A modelagem geral foi feita primeiro no Astah
 ([DiagramaCasoUsoAstah.jpeg](docs/diagramas/DiagramaCasoUsoAstah.jpeg)), para discussão dos casos de uso,
