@@ -1,11 +1,16 @@
 @startuml Sistema de Gestão de eBooks
 left to right direction
 
+actor "Usuário do Sistema" as usuario
 actor "Aluno" as aluno
 actor "Bibliotecário" as bib
 
+' --- Aluno e Bibliotecário são especializações de Usuário do Sistema ---
+aluno --|> usuario
+bib --|> usuario
+
 rectangle "Sistema de Gestão de eBooks" {
-  usecase "Adicionar eBook\nà estante"        as UC_adicionar
+  usecase "UC01 - Adicionar eBook\nà estante"        as UC_adicionar
   usecase "Registrar estatística\nde uso"     as UC_estatistica
   usecase "Remover eBook\nda estante"         as UC_remover
   usecase "Acessar eBook"                     as UC_acessar
@@ -15,14 +20,15 @@ rectangle "Sistema de Gestão de eBooks" {
   usecase "Renovar catálogo\ndo semestre"     as UC_renovar
 }
 
+' --- Usuário do Sistema (vale para os dois perfis) ---
+usuario --> UC_login
+
 ' --- Aluno ---
 aluno --> UC_adicionar
 aluno --> UC_remover
 aluno --> UC_acessar
-aluno --> UC_login
 
 ' --- Bibliotecário ---
-bib --> UC_login
 bib --> UC_cadastrar
 bib --> UC_consultar
 bib --> UC_renovar

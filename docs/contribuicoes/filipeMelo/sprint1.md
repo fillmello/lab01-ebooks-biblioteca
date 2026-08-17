@@ -6,7 +6,7 @@ Contribuição: em conjunto, na aula, analisamos o documento do enunciado, levan
 usuário em um documento na pasta docs e fizemos o setup inicial do projeto (repositório, estrutura
 de pastas e .gitignore de Java).
 
- Fiquei
+Fiquei
 responsável pelos casos 01 a 04. Escrevi essa parte em PlantUML e, ao final, renderizei a imagem do
 diagrama e atualizei o README com a descrição do sistema e os links da documentação.
 
