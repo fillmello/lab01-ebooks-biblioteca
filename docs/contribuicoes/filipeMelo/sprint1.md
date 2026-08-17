@@ -2,22 +2,15 @@
 
 ## Semana 1
 
-Contribuição: criei o repositório no GitHub com README e .gitignore de Java, montei a estrutura de
-pastas do projeto e configurei a proteção da branch main.
+Contribuição: em conjunto, na aula, analisamos o documento do enunciado, levantamos as histórias de
+usuário em um documento na pasta docs e fizemos o setup inicial do projeto (repositório, estrutura
+de pastas e .gitignore de Java). Dividimos os 8 casos de uso, 4 para cada integrante, e fiquei
+responsável pelos casos 01 a 04. Escrevi essa parte em PlantUML e, ao final, renderizei a imagem do
+diagrama e atualizei o README com a descrição do sistema e os links da documentação.
 
-Decisões: exigi Pull Request para alterar a main, em vez de deixar todos commitando direto, porque
-o diagrama e o arquivo de histórias são compartilhados e editar direto na main geraria sobrescrita
-de trabalho.
-
-## Semana 2
-
-Contribuição: modelei o Diagrama de Casos de Uso em PlantUML, com os 8 casos de uso do sistema, e
-exportei a imagem do diagrama. Também atualizei o README com a descrição do sistema e os links da
-documentação.
-
-Decisões: modelei "Registrar estatística de uso" como caso de uso incluído (<<include>>) de
-"Adicionar eBook à estante", e não como <<extend>>, porque o enunciado diz que a notificação ocorre
-sempre que um aluno adiciona um eBook, ou seja, é fluxo obrigatório e não condicional.
+Decisões: fizemos a modelagem geral primeiro no Astah, para visualizar e discutir melhor os casos
+de uso, e só depois transformamos o diagrama em PlantUML. Assim validamos a modelagem antes de
+escrever o código do diagrama, em vez de modelar direto no PlantUML e ter que refazer.
 
 Uso de IA: usei o Claude (Anthropic) para revisar a consistência entre o diagrama e as histórias e
 para revisar a redação do README. Ajustei o diagrama manualmente antes do commit.

@@ -15,18 +15,24 @@ no semestre seguinte, e permite aos bibliotecários acompanhar quais alunos est�
 
 ## Documentação
 
-- Diagrama de casos de uso: [docs/diagramas/casos-de-uso.puml](docs/diagramas/casos-de-uso.puml) ([imagem](docs/diagramas/DiagramaCasoDeUso.jpeg))
+- Diagrama de casos de uso: [docs/diagramas/casos-de-uso.puml](docs/diagramas/casos-de-uso.puml) ([imagem](docs/diagramas/casos-de-uso.png))
 - Histórias de usuário: [docs/historias-de-usuario.md](docs/historias-de-usuario.md)
 - Contribuições semanais: [docs/contribuicoes/](docs/contribuicoes/)
 
-![Diagrama de casos de uso](docs/diagramas/DiagramaCasoDeUso.jpeg)
+![Diagrama de casos de uso](docs/diagramas/casos-de-uso.png)
+
+A modelagem geral foi feita primeiro no Astah
+([DiagramaCasoDeUso.jpeg](docs/diagramas/DiagramaCasoDeUso.jpeg)), para discussão dos casos de uso,
+e depois transformada em PlantUML.
 
 ## Distribuição de tarefas
 
-| Integrante | Responsabilidade na Sprint 1 |
+As histórias de usuário foram levantadas em conjunto, em aula. Os casos de uso foram divididos:
+
+| Integrante | Casos de uso e histórias sob responsabilidade |
 | --- | --- |
-| Filipe Melo | Diagrama de casos de uso em PlantUML e modelagem dos 8 casos de uso (UC01 a UC08) |
-| João Victor | Histórias de usuário correspondentes (HU01 a HU08) |
+| Filipe Melo | 01 Realizar login, 02 Adicionar eBook à estante, 03 Remover eBook da estante, 04 Acessar eBook |
+| João Victor | 05 Cadastrar eBook, 06 Consultar alunos com um eBook, 07 Registrar estatística de uso, 08 Renovar catálogo do semestre |
 
 ## Nota de transparência sobre uso de IA
 
