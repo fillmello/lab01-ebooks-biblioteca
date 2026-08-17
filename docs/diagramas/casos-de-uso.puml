@@ -10,14 +10,14 @@ aluno --|> usuario
 bib --|> usuario
 
 rectangle "Sistema de Gestão de eBooks" {
-  usecase "UC01 - Adicionar eBook\nà estante"        as UC_adicionar
-  usecase "Registrar estatística\nde uso"     as UC_estatistica
-  usecase "Remover eBook\nda estante"         as UC_remover
-  usecase "Acessar eBook"                     as UC_acessar
-  usecase "Realizar login"                    as UC_login
-  usecase "Cadastrar eBook"                   as UC_cadastrar
-  usecase "Consultar alunos\ncom eBook"       as UC_consultar
-  usecase "Renovar catálogo\ndo semestre"     as UC_renovar
+  usecase "UC01 - Realizar login"                   as UC_login
+  usecase "UC02 - Adicionar eBook\nà estante"       as UC_adicionar
+  usecase "UC03 - Remover eBook\nda estante"        as UC_remover
+  usecase "UC04 - Acessar eBook"                    as UC_acessar
+  usecase "UC05 - Cadastrar eBook"                  as UC_cadastrar
+  usecase "UC06 - Consultar alunos\ncom eBook"      as UC_consultar
+  usecase "UC07 - Registrar estatística\nde uso"    as UC_estatistica
+  usecase "UC08 - Renovar catálogo\ndo semestre"    as UC_renovar
 }
 
 ' --- Usuário do Sistema (vale para os dois perfis) ---
