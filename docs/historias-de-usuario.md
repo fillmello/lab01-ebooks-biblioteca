@@ -1,19 +1,4 @@
 # Histórias de Usuário
-
-Sistema de Gestão de eBooks da Biblioteca Universitária — Sprint 1 (Lab01S01).
-
-Formato adotado: *Como \<persona>, \<função>, eu quero \<ação>, para que \<benefício>.*
-Critérios INVEST: Independente, Negociável, Valiosa, Estimável, Small, Testável.
-
-Personas usadas: **Bruno** (aluno), **Carla** (bibliotecária) e **Ana** (usuária genérica do
-sistema, usada apenas na HU01, que vale para os dois perfis).
-
-## Distribuição por integrante
-
-Nesta sprint, **Filipe Melo** ficou responsável pelo diagrama de casos de uso em PlantUML
-([casos-de-uso.puml](diagramas/casos-de-uso.puml)) e **João Victor** pelas histórias de usuário
-deste arquivo. Cada história corresponde ao caso de uso de mesmo número.
-
 | ID | Caso de uso / História | Ator |
 | --- | --- | --- |
 | 01 | Realizar login | Usuário do sistema |

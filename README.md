@@ -10,7 +10,7 @@ Sistema para gerenciar o acervo de livros digitais (eBooks) de uma biblioteca un
 bibliotecários cadastram e mantêm o catálogo licenciado a cada semestre, e os alunos montam uma
 estante pessoal com os títulos que vão usar no período, respeitando os limites das licenças de uso.
 
-O sistema também registra as estatísticas de uso do acervo, que orientam a renovação das licenças
+O sistema também registra as estatísticas de uso do acervo, que impactam diretamente na renovação das licenças
 no semestre seguinte, e permite aos bibliotecários acompanhar quais alunos estão com cada título.
 
 ## Documentação
