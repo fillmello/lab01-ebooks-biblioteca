@@ -1,47 +1,33 @@
-@startuml casos_de_uso_ebooks
+@startuml Sistema de Gestão de eBooks
 left to right direction
-skinparam packageStyle rectangle
-skinparam shadowing false
-skinparam actorStyle awesome
 
-actor "Aluno" as Aluno
-actor "Bibliotecário" as Bibliotecario
-actor "Sistema de Estatísticas de Uso" as Estatisticas
+actor "Aluno" as aluno
+actor "Bibliotecário" as bib
 
 rectangle "Sistema de Gestão de eBooks" {
-  usecase "Realizar login" as UC01
-  usecase "Adicionar eBook à estante" as UC02
-  usecase "Remover eBook da estante" as UC03
-  usecase "Acessar eBook" as UC04
-  usecase "Cadastrar eBook" as UC05
-  usecase "Consultar alunos com um eBook" as UC06
-  usecase "Notificar sistema de\nestatísticas de uso" as UC07
-  usecase "Renovar catálogo do semestre" as UC08
+  usecase "Adicionar eBook\nà estante"        as UC_adicionar
+  usecase "Registrar estatística\nde uso"     as UC_estatistica
+  usecase "Remover eBook\nda estante"         as UC_remover
+  usecase "Acessar eBook"                     as UC_acessar
+  usecase "Realizar login"                    as UC_login
+  usecase "Cadastrar eBook"                   as UC_cadastrar
+  usecase "Consultar alunos\ncom eBook"       as UC_consultar
+  usecase "Renovar catálogo\ndo semestre"     as UC_renovar
 }
 
-' --- Associações do Aluno ---
-Aluno --> UC01
-Aluno --> UC02
-Aluno --> UC03
-Aluno --> UC04
+' --- Aluno ---
+aluno --> UC_adicionar
+aluno --> UC_remover
+aluno --> UC_acessar
+aluno --> UC_login
 
-' --- Associações do Bibliotecário ---
-Bibliotecario --> UC01
-Bibliotecario --> UC05
-Bibliotecario --> UC06
-Bibliotecario --> UC08
+' --- Bibliotecário ---
+bib --> UC_login
+bib --> UC_cadastrar
+bib --> UC_consultar
+bib --> UC_renovar
 
-' --- Ator externo notificado pelo sistema ---
-UC07 --> Estatisticas
-
-' --- Login obrigatório: todo acesso ao sistema valida a senha do usuário ---
-UC02 ..> UC01 : <<include>>
-UC03 ..> UC01 : <<include>>
-UC04 ..> UC01 : <<include>>
-UC05 ..> UC01 : <<include>>
-UC06 ..> UC01 : <<include>>
-
-' --- Adicionar eBook sempre notifica o sistema de estatísticas de uso ---
-UC02 ..> UC07 : <<include>>
+' --- Relacionamento include ---
+UC_adicionar ..> UC_estatistica : <<include>>
 
 @enduml

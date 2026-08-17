@@ -21,7 +21,7 @@ Cada história corresponde ao caso de uso de mesmo número em
 | 04 | Acessar eBook | Aluno | Filipe Melo |
 | 05 | Cadastrar eBook | Bibliotecário | João Victor |
 | 06 | Consultar alunos com um eBook | Bibliotecário | João Victor |
-| 07 | Notificar sistema de estatísticas de uso | Sistema de Estatísticas de Uso | João Victor |
+| 07 | Registrar estatística de uso | Bibliotecário | João Victor |
 | 08 | Renovar catálogo do semestre | Bibliotecário | João Victor |
 
 ## HU01 — Realizar login
@@ -54,7 +54,7 @@ editora, formato e categoria, para que os alunos possam adicioná-los à sua est
 Como Carla, bibliotecária, eu quero saber quais alunos têm determinado eBook em sua estante, para
 que eu possa acompanhar o uso do acervo.
 
-## HU07 — Notificar sistema de estatísticas de uso
+## HU07 — Registrar estatística de uso
 
 Como Carla, bibliotecária, eu quero que o sistema de estatísticas de uso seja notificado sempre
 que um aluno adiciona um eBook à estante, para que a biblioteca possa acompanhar quais títulos são

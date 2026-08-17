@@ -28,15 +28,13 @@ atualizei o README com a descrição do sistema e os links da documentação.
 
 **Decisões:**
 
-- Modelei o **Sistema de Estatísticas de Uso como ator externo**, fora da fronteira do sistema. A
-  descrição diz que ele "é notificado pelo sistema de gestão de eBooks", ou seja, é um sistema
-  externo que interage com o nosso, e não uma funcionalidade interna.
-- Usei `<<include>>` de "Realizar login" nos casos de uso que exigem usuário autenticado, em vez de
-  repetir a validação de senha em cada um. Isso evita duplicidade no diagrama e deixa explícito que
-  o login é pré-condição obrigatória.
-- Modelei "Notificar sistema de estatísticas de uso" como `<<include>>` de "Adicionar eBook à
-  estante", e não como `<<extend>>`, porque a descrição diz "**sempre** que um aluno adiciona um
-  eBook": é um fluxo obrigatório, não condicional.
+- Modelei "Registrar estatística de uso" como `<<include>>` de "Adicionar eBook à estante", e não
+  como `<<extend>>`, porque a descrição diz "sempre que um aluno adiciona um eBook": é um fluxo
+  obrigatório, não condicional.
+- Modelei "Realizar login" como caso de uso associado diretamente aos dois atores, em vez de
+  incluí-lo em cada um dos demais casos de uso. Como todos os usuários têm senha, o login é
+  pré-condição geral do sistema; ligar `<<include>>` de todos os casos de uso para ele deixaria o
+  diagrama poluído sem acrescentar informação.
 - Separei "Adicionar eBook à estante" de "Remover eBook da estante" como dois casos de uso, em vez
   de um único "Gerenciar estante", para facilitar a distribuição individual de tarefas e porque as
   regras de negócio são distintas (limite de 4+2 na adição).
@@ -47,6 +45,5 @@ atualizei o README com a descrição do sistema e os links da documentação.
 
 **Uso de IA:** usei o Claude (Anthropic) para revisar a consistência entre o diagrama e as
 histórias de usuário, para gerar a estrutura inicial dos arquivos de documentação e para revisar a
-redação do README. Revisei todo o conteúdo antes de commitar; as decisões de modelagem listadas
-acima (ator externo, uso de `<<include>>`, separação dos casos de uso) foram discutidas e validadas
-por mim, e a numeração das histórias foi realinhada manualmente para corresponder aos casos de uso.
+redação do README. Revisei todo o conteúdo antes de commitar e ajustei manualmente o diagrama e a
+nomenclatura dos casos de uso até ficarem como eu queria.

@@ -6,7 +6,7 @@
 >
 > Sua responsabilidade acordada na distribuição (ver [historias-de-usuario.md](../../historias-de-usuario.md)):
 > **UC05/HU05 Cadastrar eBook**, **UC06/HU06 Consultar alunos com um eBook**,
-> **UC07/HU07 Notificar sistema de estatísticas de uso**, **UC08/HU08 Renovar catálogo do semestre**.
+> **UC07/HU07 Registrar estatística de uso**, **UC08/HU08 Renovar catálogo do semestre**.
 
 ## Semana 1 (10/08/2026)
 

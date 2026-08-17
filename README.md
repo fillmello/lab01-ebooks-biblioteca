@@ -29,18 +29,18 @@ para validação do respectivo login.
 
 ## Documentação
 
-- Diagrama de casos de uso: [docs/diagramas/casos-de-uso.puml](docs/diagramas/casos-de-uso.puml) ([imagem](docs/diagramas/casos-de-uso.png))
+- Diagrama de casos de uso: [docs/diagramas/casos-de-uso.puml](docs/diagramas/casos-de-uso.puml) ([imagem](docs/diagramas/DiagramaCasoDeUso.jpeg))
 - Histórias de usuário: [docs/historias-de-usuario.md](docs/historias-de-usuario.md)
 - Contribuições semanais: [docs/contribuicoes/](docs/contribuicoes/)
 
-![Diagrama de casos de uso](docs/diagramas/casos-de-uso.png)
+![Diagrama de casos de uso](docs/diagramas/DiagramaCasoDeUso.jpeg)
 
 ## Distribuição de tarefas
 
 | Integrante | Casos de uso e histórias sob responsabilidade |
 | --- | --- |
 | Filipe Melo | 01 Realizar login, 02 Adicionar eBook à estante, 03 Remover eBook da estante, 04 Acessar eBook |
-| João Victor | 05 Cadastrar eBook, 06 Consultar alunos com um eBook, 07 Notificar sistema de estatísticas de uso, 08 Renovar catálogo do semestre |
+| João Victor | 05 Cadastrar eBook, 06 Consultar alunos com um eBook, 07 Registrar estatística de uso, 08 Renovar catálogo do semestre |
 
 ## Nota de transparência sobre uso de IA
 
