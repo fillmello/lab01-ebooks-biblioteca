@@ -6,18 +6,12 @@ Repositório: <https://github.com/fillmello/lab01-ebooks-biblioteca>
 
 ## Descrição do sistema
 
-Uma universidade pretende oferecer aos alunos um acervo de livros digitais (eBooks), cadastrados a
-cada semestre pela equipe da biblioteca. Cada eBook tem título, editora, formato de arquivo e
-categoria, além de uma licença de uso que limita a 60 os acessos simultâneos ao mesmo título.
+Sistema para gerenciar o acervo de livros digitais (eBooks) de uma biblioteca universitária. Os
+bibliotecários cadastram e mantêm o catálogo licenciado a cada semestre, e os alunos montam uma
+estante pessoal com os títulos que vão usar no período, respeitando os limites das licenças de uso.
 
-Cada aluno monta uma estante pessoal com até 4 eBooks de leitura obrigatória e 2 de leitura livre,
-podendo adicionar e remover títulos durante os períodos de acesso do semestre. Um eBook só
-permanece no catálogo licenciado no semestre seguinte se, ao final do período de acesso, tiver sido
-adicionado à estante de pelo menos 3 alunos.
-
-Cada adição notifica o sistema de estatísticas de uso, para que a biblioteca acompanhe os títulos
-mais utilizados. Os bibliotecários podem consultar quais alunos têm determinado eBook em sua
-estante, e todos os usuários têm senha para validação do login.
+O sistema também registra as estatísticas de uso do acervo, que orientam a renovação das licenças
+no semestre seguinte, e permite aos bibliotecários acompanhar quais alunos estão com cada título.
 
 ## Documentação
 
