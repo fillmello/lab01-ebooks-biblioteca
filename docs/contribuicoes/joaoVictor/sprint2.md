@@ -14,8 +14,5 @@ só faz sentido dentro do semestre a que pertence.
 Transformei formato e categoria em enums em vez de String, porque o enunciado lista valores fixos
 (PDF/EPUB e literatura/técnico/periódico) e o enum impede que se cadastre um valor inválido.
 
-Criei a classe Disciplina e o caso de uso UC09, que faltavam para o sistema saber quais eBooks são
-de leitura obrigatória. Sem isso, o tipo dependia da declaração do aluno.
-
 Uso de IA: usei o Claude (Anthropic) para revisar os nomes dos métodos e verificar se as
 multiplicidades do diagrama batiam com as regras do enunciado.

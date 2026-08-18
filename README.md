@@ -51,7 +51,7 @@ As histórias de usuário foram levantadas em conjunto, em aula. Os casos de uso
 | Integrante | Casos de uso e histórias sob responsabilidade |
 | --- | --- |
 | Filipe Melo | 01 Realizar login, 02 Adicionar eBook à estante, 03 Remover eBook da estante, 04 Acessar eBook |
-| João Victor | 05 Cadastrar eBook, 06 Consultar alunos com um eBook, 07 Registrar estatística de uso, 08 Renovar catálogo do semestre, 09 Cadastrar disciplina e leituras indicadas |
+| João Victor | 05 Cadastrar eBook, 06 Consultar alunos com um eBook, 07 Registrar estatística de uso, 08 Renovar catálogo do semestre |
 
 ### Sprint 2, agregações de classes
 
@@ -60,7 +60,7 @@ Mantida a mesma divisão da Sprint 1:
 | Integrante | Agregação | Classes |
 | --- | --- | --- |
 | Filipe Melo | `ItemEstante o-- EBook` | Usuario, Aluno, Estante, ItemEstante, Licenca, TipoLeitura |
-| João Victor | `Catalogo o-- EBook` | Bibliotecario, EBook, Catalogo, PeriodoAcesso, SistemaEstatisticas, Disciplina, Formato, Categoria |
+| João Victor | `Catalogo o-- EBook` | Bibliotecario, EBook, Catalogo, PeriodoAcesso, SistemaEstatisticas, Formato, Categoria |
 
 O registro semanal de cada integrante fica em [docs/contribuicoes/](docs/contribuicoes/), um arquivo
 por sprint.

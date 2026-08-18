@@ -18,7 +18,6 @@ rectangle "Sistema de Gestão de eBooks" {
   usecase "UC06 - Consultar alunos\ncom eBook"      as UC_consultar
   usecase "UC07 - Registrar estatística\nde uso"    as UC_estatistica
   usecase "UC08 - Renovar catálogo\ndo semestre"    as UC_renovar
-  usecase "UC09 - Cadastrar disciplina\ne leituras indicadas" as UC_disciplina
 }
 
 ' --- Usuário do Sistema (vale para os dois perfis) ---
@@ -33,7 +32,6 @@ aluno --> UC_acessar
 bib --> UC_cadastrar
 bib --> UC_consultar
 bib --> UC_renovar
-bib --> UC_disciplina
 
 ' --- Relacionamento include ---
 UC_adicionar ..> UC_estatistica : <<include>>
