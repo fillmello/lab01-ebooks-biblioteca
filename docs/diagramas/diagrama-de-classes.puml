@@ -14,7 +14,9 @@ abstract class Usuario {
 
 class Aluno {
   -matricula: String
-  +adicionarEBook(ebook: EBook, tipo: TipoLeitura): boolean
+  +adicionarEBook(ebook: EBook): boolean
+  +classificarLeitura(ebook: EBook): TipoLeitura
+  +matricular(disciplina: Disciplina): void
   +removerEBook(ebook: EBook): boolean
   +acessarEBook(ebook: EBook): boolean
   +getMatricula(): String
@@ -26,6 +28,7 @@ class Bibliotecario {
   +cadastrarEBook(ebook: EBook, catalogo: Catalogo): void
   +consultarAlunosComEBook(ebook: EBook, alunos: List<Aluno>): List<Aluno>
   +renovarCatalogo(catalogo: Catalogo, alunos: List<Aluno>): Catalogo
+  +cadastrarDisciplina(disciplina: Disciplina): void
   +getRegistroFuncional(): String
 }
 
@@ -51,6 +54,16 @@ class ItemEstante {
 enum TipoLeitura {
   OBRIGATORIA
   LIVRE
+}
+
+' ===== UC09 - Cadastrar disciplina e leituras indicadas =====
+class Disciplina {
+  -codigo: String
+  -nome: String
+  +indicarLeitura(ebook: EBook): void
+  +indicou(ebook: EBook): boolean
+  +listarIndicados(): List<EBook>
+  +getCodigo(): String
 }
 
 ' ===== UC05 - Cadastrar eBook =====
@@ -116,6 +129,8 @@ Usuario <|-- Aluno
 Usuario <|-- Bibliotecario
 
 Aluno "1" *-- "1" Estante
+Aluno "0..*" -- "0..*" Disciplina : matriculado em >
+Disciplina "0..*" o-- "0..*" EBook : indica leitura >
 Estante "1" *-- "0..6" ItemEstante
 ItemEstante "0..*" o-- "1" EBook
 ItemEstante --> TipoLeitura

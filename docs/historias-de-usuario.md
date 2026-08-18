@@ -9,6 +9,7 @@
 | 06 | Consultar alunos com um eBook | Bibliotecário |
 | 07 | Registrar estatística de uso | Bibliotecário |
 | 08 | Renovar catálogo do semestre | Bibliotecário |
+| 09 | Cadastrar disciplina e leituras indicadas | Bibliotecário |
 
 ## HU01 — Realizar login
 
@@ -90,3 +91,14 @@ Critérios de aceitação:
 - Ao final do período de acesso, eBooks presentes na estante de 3 ou mais alunos permanecem no
   catálogo do semestre seguinte.
 - eBooks presentes na estante de menos de 3 alunos têm a licença não renovada e saem do catálogo.
+
+## HU09 — Cadastrar disciplina e leituras indicadas
+
+Como Carla, bibliotecária, eu quero cadastrar as disciplinas e os eBooks que cada uma indica como
+leitura obrigatória, para que o sistema classifique sozinho o tipo de leitura ao aluno adicionar um
+eBook, sem depender do que o aluno declara.
+
+Critérios de aceitação:
+- Permite cadastrar uma disciplina e associar a ela os eBooks de leitura obrigatória.
+- Um eBook indicado por alguma disciplina do aluno é classificado como leitura obrigatória.
+- Um eBook não indicado por nenhuma disciplina do aluno é classificado como leitura livre.

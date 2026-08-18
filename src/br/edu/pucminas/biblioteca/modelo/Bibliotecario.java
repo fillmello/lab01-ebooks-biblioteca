@@ -26,6 +26,10 @@ public class Bibliotecario extends Usuario {
         return null;
     }
 
+    public void cadastrarDisciplina(Disciplina disciplina) {
+        // TODO: implementar na Sprint 3
+    }
+
     public String getRegistroFuncional() {
         return registroFuncional;
     }
