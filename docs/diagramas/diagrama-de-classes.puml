@@ -1,0 +1,132 @@
+@startuml diagrama_de_classes_ebooks
+skinparam classAttributeIconSize 0
+hide empty members
+
+' ===== UC01 - Realizar login =====
+abstract class Usuario {
+  -id: String
+  -nome: String
+  -senha: String
+  +autenticar(senhaDigitada: String): boolean
+  +getId(): String
+  +getNome(): String
+}
+
+class Aluno {
+  -matricula: String
+  +adicionarEBook(ebook: EBook, tipo: TipoLeitura): boolean
+  +removerEBook(ebook: EBook): boolean
+  +acessarEBook(ebook: EBook): boolean
+  +getMatricula(): String
+  +getEstante(): Estante
+}
+
+class Bibliotecario {
+  -registroFuncional: String
+  +cadastrarEBook(ebook: EBook, catalogo: Catalogo): void
+  +consultarAlunosComEBook(ebook: EBook, alunos: List<Aluno>): List<Aluno>
+  +renovarCatalogo(catalogo: Catalogo, alunos: List<Aluno>): Catalogo
+  +getRegistroFuncional(): String
+}
+
+' ===== UC02 e UC03 - Adicionar e remover eBook da estante =====
+class Estante {
+  -LIMITE_OBRIGATORIOS: int
+  -LIMITE_LIVRES: int
+  +adicionar(ebook: EBook, tipo: TipoLeitura): boolean
+  +remover(ebook: EBook): boolean
+  +listar(): List<ItemEstante>
+  +contarPorTipo(tipo: TipoLeitura): int
+  +contemEBook(ebook: EBook): boolean
+}
+
+class ItemEstante {
+  -tipo: TipoLeitura
+  -dataAdicao: LocalDate
+  +getEBook(): EBook
+  +getTipo(): TipoLeitura
+  +getDataAdicao(): LocalDate
+}
+
+enum TipoLeitura {
+  OBRIGATORIA
+  LIVRE
+}
+
+' ===== UC05 - Cadastrar eBook =====
+class EBook {
+  -titulo: String
+  -editora: String
+  -formato: Formato
+  -categoria: Categoria
+  +getTitulo(): String
+  +getEditora(): String
+  +getFormato(): Formato
+  +getCategoria(): Categoria
+  +getLicenca(): Licenca
+}
+
+enum Formato {
+  PDF
+  EPUB
+}
+
+enum Categoria {
+  LITERATURA
+  TECNICO
+  PERIODICO
+}
+
+' ===== UC04 - Acessar eBook =====
+class Licenca {
+  -limiteAcessosSimultaneos: int
+  -acessosAtivos: int
+  +temVagaDisponivel(): boolean
+  +ocuparAcesso(): boolean
+  +liberarAcesso(): void
+  +getAcessosAtivos(): int
+}
+
+' ===== UC08 - Renovar catalogo do semestre =====
+class Catalogo {
+  -semestre: String
+  -MINIMO_ALUNOS_RENOVACAO: int
+  +adicionarEBook(ebook: EBook): void
+  +removerEBook(ebook: EBook): void
+  +listarEBooks(): List<EBook>
+  +renovar(alunos: List<Aluno>): Catalogo
+  +getSemestre(): String
+}
+
+class PeriodoAcesso {
+  -dataInicio: LocalDate
+  -dataFim: LocalDate
+  +estaAberto(data: LocalDate): boolean
+  +jaEncerrou(data: LocalDate): boolean
+}
+
+' ===== UC07 - Registrar estatistica de uso =====
+class SistemaEstatisticas {
+  +registrarAdicao(ebook: EBook): void
+  +consultarTotalAdicoes(ebook: EBook): int
+}
+
+' ===== Relacionamentos =====
+Usuario <|-- Aluno
+Usuario <|-- Bibliotecario
+
+Aluno "1" *-- "1" Estante
+Estante "1" *-- "0..6" ItemEstante
+ItemEstante "0..*" o-- "1" EBook
+ItemEstante --> TipoLeitura
+
+EBook "1" -- "1" Licenca
+EBook --> Formato
+EBook --> Categoria
+
+Catalogo "1" o-- "0..*" EBook
+Catalogo "1" *-- "1..*" PeriodoAcesso
+
+SistemaEstatisticas "1" ..> "0..*" EBook : registra uso
+
+@enduml
