@@ -13,11 +13,10 @@ estante pessoal com os títulos que vão usar no período, respeitando os limite
 O sistema também registra as estatísticas de uso do acervo, que impactam diretamente na renovação das licenças
 no semestre seguinte, e permite aos bibliotecários acompanhar quais alunos estão com cada título.
 
-## Documentação
+## Sprint 1 (Lab01S01) — Modelo de Análise
 
-- Diagrama de casos de uso: [docs/diagramas/casos-de-uso.puml](docs/diagramas/casos-de-uso.puml) ([imagem](docs/diagramas/DiagramaCasoUsoPuml.png))
+- Diagrama de casos de uso: [casos-de-uso.puml](docs/diagramas/casos-de-uso.puml) ([imagem](docs/diagramas/DiagramaCasoUsoPuml.png))
 - Histórias de usuário: [docs/historias-de-usuario.md](docs/historias-de-usuario.md)
-- Contribuições semanais: [docs/contribuicoes/](docs/contribuicoes/)
 
 ![Diagrama de casos de uso](docs/diagramas/DiagramaCasoUsoPuml.png)
 
@@ -27,7 +26,25 @@ uso, e depois transformada em PlantUML. O diagrama do Astah não reflete os ajus
 conversão: a numeração dos casos de uso e o ator "Usuário do Sistema" foram decisões tomadas já na
 etapa do PlantUML, que é a versão vigente.
 
+## Sprint 2 (Lab01S02) — Projeto Estrutural
+
+- Diagrama de classes: [diagrama-de-classes.puml](docs/diagramas/diagrama-de-classes.puml) ([imagem](docs/diagramas/DiagramaClassesPuml.png))
+- Projeto Java: [src/br/edu/pucminas/biblioteca/modelo/](src/br/edu/pucminas/biblioteca/modelo/)
+
+![Diagrama de classes](docs/diagramas/DiagramaClassesPuml.png)
+
+Cada classe é rastreável a um caso de uso da Sprint 1. Os métodos estão como stub, para serem
+implementados na Sprint 3.
+
+Para compilar:
+
+```bash
+javac -d out $(find src -name '*.java')
+```
+
 ## Distribuição de tarefas
+
+### Sprint 1, casos de uso e histórias
 
 As histórias de usuário foram levantadas em conjunto, em aula. Os casos de uso foram divididos:
 
@@ -35,6 +52,18 @@ As histórias de usuário foram levantadas em conjunto, em aula. Os casos de uso
 | --- | --- |
 | Filipe Melo | 01 Realizar login, 02 Adicionar eBook à estante, 03 Remover eBook da estante, 04 Acessar eBook |
 | João Victor | 05 Cadastrar eBook, 06 Consultar alunos com um eBook, 07 Registrar estatística de uso, 08 Renovar catálogo do semestre |
+
+### Sprint 2, agregações de classes
+
+Mantida a mesma divisão da Sprint 1:
+
+| Integrante | Agregação | Classes |
+| --- | --- | --- |
+| Filipe Melo | `ItemEstante o-- EBook` | Usuario, Aluno, Estante, ItemEstante, Licenca, TipoLeitura |
+| João Victor | `Catalogo o-- EBook` | Bibliotecario, EBook, Catalogo, PeriodoAcesso, SistemaEstatisticas, Formato, Categoria |
+
+O registro semanal de cada integrante fica em [docs/contribuicoes/](docs/contribuicoes/), um arquivo
+por sprint.
 
 ## Nota de transparência sobre uso de IA
 
