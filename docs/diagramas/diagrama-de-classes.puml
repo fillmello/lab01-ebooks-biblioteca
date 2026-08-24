@@ -7,7 +7,6 @@ abstract class Usuario {
   -id: String
   -nome: String
   -senha: String
-  +autenticar(senhaDigitada: String): boolean
   +getId(): String
   +getNome(): String
 }

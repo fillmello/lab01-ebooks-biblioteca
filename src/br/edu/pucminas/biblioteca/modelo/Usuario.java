@@ -13,11 +13,6 @@ public abstract class Usuario {
         this.senha = senha;
     }
 
-    public boolean autenticar(String senhaDigitada) {
-        // TODO: implementar na Sprint 3
-        return false;
-    }
-
     public String getId() {
         return id;
     }

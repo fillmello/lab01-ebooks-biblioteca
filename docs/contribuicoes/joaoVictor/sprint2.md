@@ -7,8 +7,8 @@ Contribuição: mantivemos a divisão da Sprint 1 e fiquei com a agregação do 
 SistemaEstatisticas e os enums Formato e Categoria, e criei as classes Java correspondentes com
 atributos, construtores e stubs dos métodos.
 
-Decisões: usei agregação (o--) entre Catalogo e EBook, porque o eBook não deixa de existir quando
-sai do catálogo de um semestre, e composição (*--) entre Catalogo e PeriodoAcesso, porque o período
+Decisões: usei agregação entre Catalogo e EBook, porque o eBook não deixa de existir quando
+sai do catálogo de um semestre, e composição entre Catalogo e PeriodoAcesso, porque o período
 só faz sentido dentro do semestre a que pertence.
 
 Uso de IA: usei o Claude (Anthropic) para revisar os nomes dos métodos e conferir se as
