@@ -13,6 +13,7 @@ abstract class Usuario {
 
 class Aluno {
   -matricula: String
+  -estante: Estante
   +adicionarEBook(ebook: EBook, tipo: TipoLeitura): boolean
   +removerEBook(ebook: EBook): boolean
   +acessarEBook(ebook: EBook): boolean
@@ -32,6 +33,7 @@ class Bibliotecario {
 class Estante {
   -LIMITE_OBRIGATORIOS: int
   -LIMITE_LIVRES: int
+  -itens: List<ItemEstante>
   +adicionar(ebook: EBook, tipo: TipoLeitura): boolean
   +remover(ebook: EBook): boolean
   +listar(): List<ItemEstante>
@@ -40,6 +42,7 @@ class Estante {
 }
 
 class ItemEstante {
+  -ebook: EBook
   -tipo: TipoLeitura
   -dataAdicao: LocalDate
   +getEBook(): EBook
@@ -58,6 +61,7 @@ class EBook {
   -editora: String
   -formato: Formato
   -categoria: Categoria
+  -licenca: Licenca
   +getTitulo(): String
   +getEditora(): String
   +getFormato(): Formato
@@ -90,6 +94,8 @@ class Licenca {
 class Catalogo {
   -semestre: String
   -MINIMO_ALUNOS_RENOVACAO: int
+  -ebooks: List<EBook>
+  -periodosAcesso: List<PeriodoAcesso>
   +adicionarEBook(ebook: EBook): void
   +removerEBook(ebook: EBook): void
   +listarEBooks(): List<EBook>
@@ -106,6 +112,7 @@ class PeriodoAcesso {
 
 ' ===== UC07 - Registrar estatistica de uso =====
 class SistemaEstatisticas {
+  -adicoesPorTitulo: Map<String, Integer>
   +registrarAdicao(ebook: EBook): void
   +consultarTotalAdicoes(ebook: EBook): int
 }

@@ -8,8 +8,8 @@ e criei as classes Java correspondentes com atributos, construtores e stubs dos 
 
 Decisões: criei a classe ItemEstante entre Estante e EBook, em vez de guardar o tipo de leitura
 dentro de EBook, porque o mesmo eBook pode ser obrigatório para um aluno e livre para outro. Usei
-agregação (o--) entre ItemEstante e EBook, já que o eBook continua no catálogo depois de sair da
-estante, e composição (*--) entre Aluno e Estante, que não existe sem o dono.
+agregação entre ItemEstante e EBook, já que o eBook continua no catálogo depois de sair da
+estante, e composição entre Aluno e Estante, que não existe sem o dono.
 
 Uso de IA: usei o Claude (Anthropic) para revisar o alinhamento entre o diagrama de classes e o
 código Java. Conferi os nomes dos métodos antes do commit.
