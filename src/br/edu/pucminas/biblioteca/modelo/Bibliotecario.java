@@ -1,5 +1,7 @@
 package br.edu.pucminas.biblioteca.modelo;
 
+import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.List;
 
 /** Bibliotecario da universidade (UC05, UC06 e UC08). */
@@ -13,17 +15,22 @@ public class Bibliotecario extends Usuario {
     }
 
     public void cadastrarEBook(EBook ebook, Catalogo catalogo) {
-        // TODO: implementar na Sprint 3
+        catalogo.adicionarEBook(ebook);
     }
 
     public List<Aluno> consultarAlunosComEBook(EBook ebook, List<Aluno> alunos) {
-        // TODO: implementar na Sprint 3
-        return null;
+        List<Aluno> alunosComEbook = new ArrayList<>();
+        for (Aluno aluno : alunos){
+            if (aluno.getEstante().contemEBook(ebook)){
+                alunosComEbook.add(aluno);
+            }
+        }
+
+        return alunosComEbook;
     }
 
     public Catalogo renovarCatalogo(Catalogo catalogo, List<Aluno> alunos) {
-        // TODO: implementar na Sprint 3
-        return null;
+        return catalogo.renovar(alunos);
     }
 
     public String getRegistroFuncional() {

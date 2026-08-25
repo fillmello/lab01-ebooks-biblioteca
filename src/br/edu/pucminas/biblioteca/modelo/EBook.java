@@ -1,7 +1,9 @@
 package br.edu.pucminas.biblioteca.modelo;
 
+import java.io.Serializable;
+
 /** eBook do acervo (UC05 - Cadastrar eBook). */
-public class EBook {
+public class EBook implements Serializable {
 
     private String titulo;
     private String editora;
@@ -35,5 +37,15 @@ public class EBook {
 
     public Licenca getLicenca() {
         return licenca;
+    }
+
+    @Override
+    public String toString(){
+        StringBuilder stringBuilder = new StringBuilder();
+        stringBuilder.append("Nome: " + this.titulo);
+        stringBuilder.append("\nEditora: " + this.editora);
+        stringBuilder.append("\nCategoria: " + this.categoria);
+        //FIXME
+        return stringBuilder.toString();
     }
 }

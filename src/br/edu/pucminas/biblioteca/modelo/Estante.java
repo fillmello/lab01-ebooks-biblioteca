@@ -1,10 +1,11 @@
 package br.edu.pucminas.biblioteca.modelo;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
 /** Estante pessoal do aluno (UC02 e UC03). */
-public class Estante {
+public class Estante implements Serializable{
 
     private static final int LIMITE_OBRIGATORIOS = 4;
     private static final int LIMITE_LIVRES = 2;

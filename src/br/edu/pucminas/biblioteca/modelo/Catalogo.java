@@ -1,10 +1,11 @@
 package br.edu.pucminas.biblioteca.modelo;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
 /** Catalogo licenciado de um semestre (UC05 e UC08). */
-public class Catalogo {
+public class Catalogo implements Serializable {
 
     private static final int MINIMO_ALUNOS_RENOVACAO = 3;
 
@@ -17,11 +18,19 @@ public class Catalogo {
     }
 
     public void adicionarEBook(EBook ebook) {
-        // TODO: implementar na Sprint 3
+        if (!ebooks.contains(ebook)) {
+            ebooks.add(ebook);
+        }
     }
 
     public void removerEBook(EBook ebook) {
-        // TODO: implementar na Sprint 3
+        if (ebook == null) {
+            throw new IllegalArgumentException("O eBook não pode ser nulo.");
+        }
+
+        if (!ebooks.remove(ebook)) {
+            throw new IllegalArgumentException("eBook não encontrado no catálogo.");
+        }
     }
 
     public List<EBook> listarEBooks() {
@@ -29,10 +38,24 @@ public class Catalogo {
     }
 
     public Catalogo renovar(List<Aluno> alunos) {
-        // TODO: implementar na Sprint 3
-        // Mantem apenas os eBooks presentes na estante de
-        // MINIMO_ALUNOS_RENOVACAO ou mais alunos.
-        return null;
+        List<EBook> novosEbooks = new ArrayList<>();
+
+        for (EBook ebook : ebooks) {
+            int quantidadeAlunos = 0;
+
+            for (Aluno aluno : alunos) {
+                if (aluno.getEstante().contemEBook(ebook)) {
+                    quantidadeAlunos++;
+                }
+            }
+
+            if (quantidadeAlunos >= MINIMO_ALUNOS_RENOVACAO) {
+                novosEbooks.add(ebook);
+            }
+        }
+
+        ebooks = novosEbooks;
+        return this;
     }
 
     public String getSemestre() {

@@ -1,7 +1,9 @@
 package br.edu.pucminas.biblioteca.modelo;
 
+import java.io.Serializable;
+
 /** Licenca de uso de um eBook (UC04 - Acessar eBook). */
-public class Licenca {
+public class Licenca implements Serializable{
 
     private int limiteAcessosSimultaneos;
     private int acessosAtivos;

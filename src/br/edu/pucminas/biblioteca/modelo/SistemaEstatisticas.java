@@ -1,10 +1,11 @@
 package br.edu.pucminas.biblioteca.modelo;
 
+import java.io.Serializable;
 import java.util.HashMap;
 import java.util.Map;
 
 /** Sistema de estatisticas de uso, notificado a cada adicao (UC07). */
-public class SistemaEstatisticas {
+public class SistemaEstatisticas implements Serializable{
 
     private Map<String, Integer> adicoesPorTitulo = new HashMap<>();
 
