@@ -1,11 +1,13 @@
 package br.edu.pucminas.biblioteca.modelo;
 
 import java.io.Serializable;
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 /** Estante pessoal do aluno (UC02 e UC03). */
-public class Estante implements Serializable{
+public class Estante implements Serializable {
 
     private static final int LIMITE_OBRIGATORIOS = 4;
     private static final int LIMITE_LIVRES = 2;
@@ -16,13 +18,37 @@ public class Estante implements Serializable{
     }
 
     public boolean adicionar(EBook ebook, TipoLeitura tipo) {
-        // TODO: implementar na Sprint 3
+
+         
+        // FIXME
+        if (tipo == TipoLeitura.LIVRE) {
+            if (itens.stream().filter(Auxebook -> Auxebook.getTipo() == TipoLeitura.LIVRE).count() < LIMITE_LIVRES) {
+                itens.add(new ItemEstante(ebook, tipo, LocalDate.now()));
+                return true;
+            } else {
+                System.err.println("Não foi possivel adicionar ebook limite livres ultrapassou");
+                return false;
+            }
+        } else {
+            if (itens.stream().filter(Auxebook -> Auxebook.getTipo() == TipoLeitura.OBRIGATORIA).count() < LIMITE_OBRIGATORIOS) {
+                itens.add(new ItemEstante(ebook, tipo, LocalDate.now()));
+                return true;
+            } else {
+                System.err.println("Não foi possivel adicionar ebook obrigadorios livres ultrapassou");
+                return false;
+            }
+        }
+
         // Deve respeitar LIMITE_OBRIGATORIOS e LIMITE_LIVRES.
-        return false;
+        // return false;
     }
 
     public boolean remover(EBook ebook) {
-        // TODO: implementar na Sprint 3
+        Optional<ItemEstante> itemComEbook = itens.stream().filter(item -> item.getEBook().equals(ebook)).findFirst();
+        if (itemComEbook != null){
+            itens.remove(itemComEbook);
+            return true;
+        }
         return false;
     }
 
@@ -41,7 +67,10 @@ public class Estante implements Serializable{
     }
 
     public boolean contemEBook(EBook ebook) {
-        // TODO: implementar na Sprint 3
+        Optional<ItemEstante> itemComEbook = itens.stream().filter(item -> item.getEBook().equals(ebook)).findFirst();
+        if (itemComEbook != null){
+            return true;
+        }
         return false;
     }
 }
