@@ -127,42 +127,41 @@ public class App {
 
         System.out.println("===== CRIAR EBOOK =====");
 
-        System.out.print("Título: ");
-        String titulo = scanner.nextLine();
+        String titulo = "";
+        do {
+            System.out.print("Titulo: ");
+            titulo = scanner.nextLine();
+        } while (titulo.isBlank());
 
-        System.out.print("Editora: ");
-        String editora = scanner.nextLine();
-
-        System.out.println("\nFormato:");
-        System.out.println("1 - PDF");
-        System.out.println("2 - EPUB");
-        System.out.print("Escolha: ");
-
-        int opcaoFormato = lerInteiro();
-
-        Formato formato;
-
-        if (opcaoFormato == 1) {
-            formato = Formato.PDF;
-        } else {
-            formato = Formato.EPUB;
-        }
-
-        System.out.println("\nCategoria:");
-        System.out.println("1 - Literatura");
-        System.out.println("2 - Técnico");
-        System.out.println("3 - Periódico");
-        System.out.print("Escolha: ");
-
-        int opcaoCategoria = lerInteiro();
-
-        Categoria categoria = Categoria.values()[opcaoCategoria - 1];
-
+        String editora = "";
+        do {
+            System.out.print("Editora: ");
+            editora = scanner.nextLine();
+        } while (editora.isBlank());
         
+        int opcao = 0;
+        do {
+            System.out.println("\nFormato:");
+            System.out.println("1 - PDF");
+            System.out.println("2 - EPUB");
+            System.out.print("Escolha: ");
+            opcao = lerInteiro();
+        } while (opcao > 2 || opcao < 1);
+        Formato formato = Formato.values()[opcao - 1];
+
+        opcao = 0;
+        do  {
+            System.out.println("\nCategoria:");
+            System.out.println("1 - Literatura");
+            System.out.println("2 - Técnico");
+            System.out.println("3 - Periódico");
+            System.out.print("Escolha: "); 
+            opcao = lerInteiro();
+        } while (opcao > 3 || opcao < 1);
+        Categoria categoria = Categoria.values()[opcao - 1];
 
         System.out.print("\nQuantidade de licenças: ");
         int quantidadeLicencas = lerInteiro();
-
         Licenca licenca = new Licenca(quantidadeLicencas);
 
         return new EBook(
@@ -188,6 +187,7 @@ public class App {
 
                 case 3:
                     for (EBook ebook : catalogo.listarEBooks()){
+                        System.err.println("---");
                         System.err.println(ebook);
                     }
                     break;
