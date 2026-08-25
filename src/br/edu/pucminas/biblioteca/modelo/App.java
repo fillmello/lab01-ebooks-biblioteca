@@ -66,31 +66,31 @@ public class App {
         }
     }
 
-    // public static void salvar(Catalogo catalogo, List<Bibliotecario>
-    // bibliotecarios, List<Aluno> alunos) {
-    public static void salvar(Catalogo catalogo) {
+    public static void salvar(Catalogo catalogo, List<Bibliotecario>
+    bibliotecarios, List<Aluno> alunos) {
+    // public static void salvar(Catalogo catalogo) {
         try {
             FileOutputStream arquivoCatalogo = new FileOutputStream("catalogo.dat");
-            // FileOutputStream arquivoBibliotecarios = new
-            // FileOutputStream("bibliotecarios.dat");
-            // FileOutputStream arquivoAlunos = new FileOutputStream("alunos.dat");
+            FileOutputStream arquivoBibliotecarios = new
+            FileOutputStream("bibliotecarios.dat");
+            FileOutputStream arquivoAlunos = new FileOutputStream("alunos.dat");
 
             ObjectOutputStream objetoCatalogo = new ObjectOutputStream(arquivoCatalogo);
-            // ObjectOutputStream objetoBibliotecarios = new
-            // ObjectOutputStream(arquivoBibliotecarios);
-            // ObjectOutputStream objetoAlunos = new ObjectOutputStream(arquivoAlunos);
+            ObjectOutputStream objetoBibliotecarios = new
+            ObjectOutputStream(arquivoBibliotecarios);
+            ObjectOutputStream objetoAlunos = new ObjectOutputStream(arquivoAlunos);
 
             objetoCatalogo.writeObject(catalogo);
-            // objetoBibliotecarios.writeObject(bibliotecarios);
-            // objetoAlunos.writeObject(alunos);
+            objetoBibliotecarios.writeObject(bibliotecarios);
+            objetoAlunos.writeObject(alunos);
 
             objetoCatalogo.close();
-            // objetoBibliotecarios.close();
-            // objetoAlunos.close();
+            objetoBibliotecarios.close();
+            objetoAlunos.close();
 
             arquivoCatalogo.close();
-            // arquivoBibliotecarios.close();
-            // arquivoAlunos.close();
+            arquivoBibliotecarios.close();
+            arquivoAlunos.close();
 
             System.out.println("Catálogo salvo com sucesso!");
 
@@ -114,10 +114,41 @@ public class App {
 
     public static int menu() {
         System.out.println("\n===== SISTEMA DE EBOOKS =====");
-        System.out.println("1 - Adicionar eBook");
-        System.out.println("2 - Remover eBook");
-        System.out.println("3 - Listar eBooks");
-        System.out.println("4 - Renovar catálogo");
+        System.out.println("1 - Login Aluno");
+        System.out.println("2 - Login Bibliotecario");
+        System.out.println("3 - Criar conta Aluno");
+        System.out.println("4 - Criar conta bibliotecario");
+        System.out.println("0 - Sair");
+        System.out.print("Escolha uma opção: ");
+        return lerInteiro();
+    }
+
+    public static int menuBibliotecario(Bibliotecario bibliotecario) {
+        System.out.println("\n===== SISTEMA DE EBOOKS "+ bibliotecario.getNome()+" =====");
+        System.out.println("1 - Cadastrar Ebook");
+
+        System.out.println("0 - Sair");
+        System.out.print("Escolha uma opção: ");
+        return lerInteiro();
+    }
+
+    public static void funcoesBibliotecario(Bibliotecario bibliotecario, Catalogo catalogo){
+        while (true) {
+            switch (menuBibliotecario(bibliotecario)) {
+                case 1:
+                    bibliotecario.cadastrarEBook(criarEBook(), catalogo);
+                    break;
+            
+                default:
+                    break;
+            }
+        }
+    }
+
+    public static int menuAluno(Aluno aluno) {
+        System.out.println("\n===== SISTEMA DE EBOOKS"+ aluno.getNome() +"=====");
+        System.out.println("1 - ");
+        
         System.out.println("0 - Sair");
         System.out.print("Escolha uma opção: ");
         return lerInteiro();
@@ -138,7 +169,7 @@ public class App {
             System.out.print("Editora: ");
             editora = scanner.nextLine();
         } while (editora.isBlank());
-        
+
         int opcao = 0;
         do {
             System.out.println("\nFormato:");
@@ -150,12 +181,12 @@ public class App {
         Formato formato = Formato.values()[opcao - 1];
 
         opcao = 0;
-        do  {
+        do {
             System.out.println("\nCategoria:");
             System.out.println("1 - Literatura");
             System.out.println("2 - Técnico");
             System.out.println("3 - Periódico");
-            System.out.print("Escolha: "); 
+            System.out.print("Escolha: ");
             opcao = lerInteiro();
         } while (opcao > 3 || opcao < 1);
         Categoria categoria = Categoria.values()[opcao - 1];
@@ -172,6 +203,55 @@ public class App {
                 licenca);
     }
 
+    public static Aluno criarAluno() {
+
+        System.out.println("===== CADASTRAR ALUNO =====");
+
+        // FIXME
+        System.out.print("ID: ");
+        String id = scanner.nextLine();
+
+        System.out.print("Nome: ");
+        String nome = scanner.nextLine();
+
+        System.out.print("Senha: ");
+        String senha = scanner.nextLine();
+
+        System.out.print("Matrícula: ");
+        String matricula = scanner.nextLine();
+
+        return new Aluno(
+                id,
+                nome,
+                senha,
+                matricula);
+    }
+
+    public static Bibliotecario criarBibliotecario() {
+
+        System.out.println("===== CADASTRAR BIBLIOTECÁRIO =====");
+
+
+        // FIXME
+        System.out.print("ID: ");
+        String id = scanner.nextLine();
+
+        System.out.print("Nome: ");
+        String nome = scanner.nextLine();
+
+        System.out.print("Senha: ");
+        String senha = scanner.nextLine();
+
+        System.out.print("Registro funcional: ");
+        String registroFuncional = scanner.nextLine();
+
+        return new Bibliotecario(
+                id,
+                nome,
+                senha,
+                registroFuncional);
+    }
+
     public static void main(String[] args) {
         Catalogo catalogo = lerCatalogo();
         List<Bibliotecario> bibliotecarios = lerBibliotecarios();
@@ -181,22 +261,23 @@ public class App {
             int sair = 0;
             switch (menu()) {
                 case 1:
-                    catalogo.adicionarEBook(criarEBook());
-                    System.err.println("Ebook Adicionado");
+                    alunos.add(criarAluno());
+                    break;
+
+                case 2:
+                    bibliotecarios.add(criarBibliotecario());
                     break;
 
                 case 3:
-                    for (EBook ebook : catalogo.listarEBooks()){
-                        System.err.println("---");
-                        System.err.println(ebook);
-                    }
+                    
+                    break;
+
+                case 4:
+                    
                     break;
 
                 default:
-                    salvar(catalogo);
-                    // salvar(catalogo, bibliotecarios, alunos);
-                    sair = 1;
-
+                    salvar(catalogo, bibliotecarios, alunos);
                     break;
             }
 
@@ -204,5 +285,33 @@ public class App {
                 break;
             }
         }
+
+        // while (true) {
+        // int sair = 0;
+        // switch (menu()) {
+        // case 1:
+        // catalogo.adicionarEBook(criarEBook());
+        // System.err.println("Ebook Adicionado");
+        // break;
+
+        // case 3:
+        // for (EBook ebook : catalogo.listarEBooks()){
+        // System.err.println("---");
+        // System.err.println(ebook);
+        // }
+        // break;
+
+        // default:
+        // salvar(catalogo);
+        // // salvar(catalogo, bibliotecarios, alunos);
+        // sair = 1;
+
+        // break;
+        // }
+
+        // if (sair == 1) {
+        // break;
+        // }
+        // }
     }
 }
