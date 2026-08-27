@@ -133,13 +133,15 @@ public class App {
     }
 
     public static void funcoesBibliotecario(Bibliotecario bibliotecario, Catalogo catalogo) {
-        while (true) {
+        int sair = 0;
+        while (sair == 0) {
             switch (menuBibliotecario(bibliotecario)) {
                 case 1:
                     bibliotecario.cadastrarEBook(criarEBook(), catalogo);
                     break;
 
                 default:
+                    sair = 1;
                     break;
             }
         }
@@ -213,6 +215,42 @@ public class App {
             }
         }
     }
+
+
+    public static void loginBibliotecario(List<Bibliotecario> bibliotecarios, Catalogo catalogo) {
+        String registro = "";
+        do {
+            System.out.print("Digite sua matricula: ");
+            registro = scanner.nextLine();
+        } while (registro.isBlank());
+
+        String senha = "";
+        do {
+            System.out.print("Digite sua senha: ");
+            senha = scanner.nextLine();
+        } while (senha.isBlank());
+
+        final String registroFinal = registro;
+        final String senhaFinal = senha;
+
+        Optional<Bibliotecario> biblitecarioTentativa = bibliotecarios.stream().filter(bibliotecatio -> bibliotecatio.validiar(senhaFinal, registroFinal))
+                .findFirst();
+        
+        System.err.println("bibliotecario: " + biblitecarioTentativa );
+        if (biblitecarioTentativa.isEmpty()) {
+            System.err.println("Não foi possivel encontrar nenhum bibliotecario, tenta novamente");
+            return;
+        }
+        
+
+        try {
+            funcoesBibliotecario(biblitecarioTentativa.get(), catalogo);
+        } catch (Exception e) {
+            System.err.println("Um erro inesperado aconteceu, tente novamnete");
+            return;
+        }
+    }
+
 
     public static void loginAluno(List<Aluno> alunos, Catalogo catalogo) {
         String matricula = "";
@@ -366,7 +404,7 @@ public class App {
                     break;
 
                 case 4:
-
+                    loginBibliotecario(bibliotecarios, catalogo);
                     break;
 
                 case 5:

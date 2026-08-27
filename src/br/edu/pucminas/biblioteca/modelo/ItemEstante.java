@@ -1,5 +1,6 @@
 package br.edu.pucminas.biblioteca.modelo;
 
+import java.io.Serializable;
 import java.time.LocalDate;
 
 /**
@@ -7,7 +8,7 @@ import java.time.LocalDate;
  * O tipo de leitura fica aqui porque o mesmo eBook pode ser obrigatorio
  * para um aluno e livre para outro.
  */
-public class ItemEstante {
+public class ItemEstante implements Serializable {
 
     private EBook ebook;
     private TipoLeitura tipo;
