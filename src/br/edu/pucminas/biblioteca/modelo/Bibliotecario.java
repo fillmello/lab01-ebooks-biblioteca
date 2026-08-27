@@ -36,4 +36,11 @@ public class Bibliotecario extends Usuario {
     public String getRegistroFuncional() {
         return registroFuncional;
     }
+
+    public boolean valdiar(String senha, String registro){
+        if (registro == registroFuncional && super.validaSenha(senha)){
+            return true;
+        }
+        return false;
+    }
 }

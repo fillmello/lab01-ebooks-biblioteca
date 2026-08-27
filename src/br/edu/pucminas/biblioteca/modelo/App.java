@@ -8,6 +8,7 @@ import java.io.ObjectOutputStream;
 import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Optional;
 import java.util.Scanner;
 
 public class App {
@@ -66,18 +67,15 @@ public class App {
         }
     }
 
-    public static void salvar(Catalogo catalogo, List<Bibliotecario>
-    bibliotecarios, List<Aluno> alunos) {
-    // public static void salvar(Catalogo catalogo) {
+    public static void salvar(Catalogo catalogo, List<Bibliotecario> bibliotecarios, List<Aluno> alunos) {
+        // public static void salvar(Catalogo catalogo) {
         try {
             FileOutputStream arquivoCatalogo = new FileOutputStream("catalogo.dat");
-            FileOutputStream arquivoBibliotecarios = new
-            FileOutputStream("bibliotecarios.dat");
+            FileOutputStream arquivoBibliotecarios = new FileOutputStream("bibliotecarios.dat");
             FileOutputStream arquivoAlunos = new FileOutputStream("alunos.dat");
 
             ObjectOutputStream objetoCatalogo = new ObjectOutputStream(arquivoCatalogo);
-            ObjectOutputStream objetoBibliotecarios = new
-            ObjectOutputStream(arquivoBibliotecarios);
+            ObjectOutputStream objetoBibliotecarios = new ObjectOutputStream(arquivoBibliotecarios);
             ObjectOutputStream objetoAlunos = new ObjectOutputStream(arquivoAlunos);
 
             objetoCatalogo.writeObject(catalogo);
@@ -114,17 +112,19 @@ public class App {
 
     public static int menu() {
         System.out.println("\n===== SISTEMA DE EBOOKS =====");
-        System.out.println("1 - Login Aluno");
-        System.out.println("2 - Login Bibliotecario");
-        System.out.println("3 - Criar conta Aluno");
-        System.out.println("4 - Criar conta bibliotecario");
+        System.out.println("1 - Criar Aluno");
+        System.out.println("2 - Criar Bibliotecario");
+        System.out.println("3 - Login Aluno");
+        System.out.println("4 - Login bibliotecario");
+        System.out.println("5 - TESTES, log em tudo");
+
         System.out.println("0 - Sair");
         System.out.print("Escolha uma opção: ");
         return lerInteiro();
     }
 
     public static int menuBibliotecario(Bibliotecario bibliotecario) {
-        System.out.println("\n===== SISTEMA DE EBOOKS "+ bibliotecario.getNome()+" =====");
+        System.out.println("\n===== SISTEMA DE EBOOKS " + bibliotecario.getNome() + " =====");
         System.out.println("1 - Cadastrar Ebook");
 
         System.out.println("0 - Sair");
@@ -132,13 +132,13 @@ public class App {
         return lerInteiro();
     }
 
-    public static void funcoesBibliotecario(Bibliotecario bibliotecario, Catalogo catalogo){
+    public static void funcoesBibliotecario(Bibliotecario bibliotecario, Catalogo catalogo) {
         while (true) {
             switch (menuBibliotecario(bibliotecario)) {
                 case 1:
                     bibliotecario.cadastrarEBook(criarEBook(), catalogo);
                     break;
-            
+
                 default:
                     break;
             }
@@ -146,12 +146,106 @@ public class App {
     }
 
     public static int menuAluno(Aluno aluno) {
-        System.out.println("\n===== SISTEMA DE EBOOKS"+ aluno.getNome() +"=====");
-        System.out.println("1 - ");
-        
+        System.out.println("\n===== SISTEMA DE EBOOKS" + aluno.getNome() + "=====");
+        System.out.println("1 - Adicionar livros");
+        System.out.println("2 - Listar seus livros");
+
         System.out.println("0 - Sair");
         System.out.print("Escolha uma opção: ");
         return lerInteiro();
+    }
+
+    public static void alunoListarLivros(Aluno aluno){
+        System.err.println("Livros de: " + aluno.getNome());
+        System.err.println(aluno.listarEbooks());
+    }
+
+
+    public static void alunoAddLivro(Aluno aluno, Catalogo catalogo){
+        for (int i = 0; i < catalogo.listarEBooks().size(); i++) {
+            System.out.println((i + 1) + " - " + catalogo.listarEBooks().get(i));
+            System.out.println("---");
+        }
+
+        System.err.println("Qual ebook voce deseja adicionar (numero)");
+        int opcao = 0;
+        do {
+            opcao = lerInteiro();;
+            if (opcao < 1 || opcao > catalogo.listarEBooks().size()) {
+                System.out.println("Opção inválida!");
+                return;
+            }
+        } while (opcao < 1 || opcao > catalogo.listarEBooks().size());
+
+        EBook ebookSelecionado = catalogo.listarEBooks().get(opcao - 1);
+
+        System.out.println("Você selecionou:");
+        System.out.println(ebookSelecionado);
+
+        System.out.println("Selecione o tipo de leitura:");
+
+        System.out.println("1 - Obrigatória");
+        System.out.println("2 - Livre");
+
+        opcao = 0;
+        do {
+            opcao = lerInteiro();
+        } while (opcao < 1 || opcao > 2);
+
+
+        aluno.adicionarEBook(ebookSelecionado, opcao == 1 ? TipoLeitura.OBRIGATORIA : TipoLeitura.LIVRE );
+    }
+
+    public static void funcoesAluno(Aluno aluno, Catalogo catalogo) {
+        int sair = 0;
+        while (sair == 0) {
+            switch (menuAluno(aluno)) {
+                case 1:
+                    alunoAddLivro(aluno, catalogo);
+                    break;
+
+                case 2:
+                    alunoListarLivros(aluno);
+
+                default:
+                    sair = 1;
+                    break;
+            }
+        }
+    }
+
+    public static void loginAluno(List<Aluno> alunos, Catalogo catalogo) {
+        String matricula = "";
+        do {
+            System.out.print("Digite sua matricula: ");
+            matricula = scanner.nextLine();
+        } while (matricula.isBlank());
+
+        String senha = "";
+        do {
+            System.out.print("Digite sua senha: ");
+            senha = scanner.nextLine();
+        } while (senha.isBlank());
+
+        final String matriculaFinal = matricula;
+        final String senhaFinal = senha;
+
+        Optional<Aluno> alunoTentativa = alunos.stream().filter(aluno -> aluno.validiar(senhaFinal, matriculaFinal))
+                .findFirst();
+        
+        System.err.println("aluno: " + alunoTentativa );
+        if (alunoTentativa.isEmpty()) {
+            System.err.println("Não foi possivel encontrar nenhum aluno, tenta novamente");
+            return;
+        }
+        
+
+        try {
+            funcoesAluno(alunoTentativa.get(), catalogo);
+        } catch (Exception e) {
+            System.err.println("Um erro inesperado aconteceu, tente novamnete");
+            return;
+        }
     }
 
     public static EBook criarEBook() {
@@ -231,7 +325,6 @@ public class App {
 
         System.out.println("===== CADASTRAR BIBLIOTECÁRIO =====");
 
-
         // FIXME
         System.out.print("ID: ");
         String id = scanner.nextLine();
@@ -269,15 +362,31 @@ public class App {
                     break;
 
                 case 3:
-                    
+                    loginAluno(alunos, catalogo);
                     break;
 
                 case 4:
-                    
+
+                    break;
+
+                case 5:
+                    for (Aluno aluno : alunos) {
+                        System.err.println(aluno);
+                    }
+                    System.err.println("FIM ALUNOS ---");
+                    for (Bibliotecario aluno : bibliotecarios) {
+                        System.err.println(aluno);
+                    }
+                    System.err.println("FIM BIBLIO ---");
+                    for (EBook aluno : catalogo.listarEBooks()) {
+                        System.err.println(aluno);
+                    }
+                    System.err.println("FIM LIVROS ---");
                     break;
 
                 default:
                     salvar(catalogo, bibliotecarios, alunos);
+                    sair = 1;
                     break;
             }
 

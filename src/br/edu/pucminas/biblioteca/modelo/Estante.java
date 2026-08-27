@@ -24,6 +24,7 @@ public class Estante implements Serializable {
         if (tipo == TipoLeitura.LIVRE) {
             if (itens.stream().filter(Auxebook -> Auxebook.getTipo() == TipoLeitura.LIVRE).count() < LIMITE_LIVRES) {
                 itens.add(new ItemEstante(ebook, tipo, LocalDate.now()));
+                System.err.println(ebook.getTitulo() + " adicionado com sucesso");
                 return true;
             } else {
                 System.err.println("Não foi possivel adicionar ebook limite livres ultrapassou");
@@ -32,6 +33,7 @@ public class Estante implements Serializable {
         } else {
             if (itens.stream().filter(Auxebook -> Auxebook.getTipo() == TipoLeitura.OBRIGATORIA).count() < LIMITE_OBRIGATORIOS) {
                 itens.add(new ItemEstante(ebook, tipo, LocalDate.now()));
+                System.err.println(ebook.getTitulo() + " adicionado com sucesso");
                 return true;
             } else {
                 System.err.println("Não foi possivel adicionar ebook obrigadorios livres ultrapassou");

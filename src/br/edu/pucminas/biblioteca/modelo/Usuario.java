@@ -22,4 +22,9 @@ public abstract class Usuario implements Serializable{
     public String getNome() {
         return nome;
     }
+
+    public boolean validaSenha(String senha){
+        System.err.println("TESTES SENHA: " + senha + " -- " + this.senha);
+        return senha.equals(this.senha);
+    }
 }
