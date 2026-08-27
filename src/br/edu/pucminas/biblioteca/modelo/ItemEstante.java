@@ -31,4 +31,9 @@ public class ItemEstante implements Serializable {
     public LocalDate getDataAdicao() {
         return dataAdicao;
     }
+
+    @Override
+    public String toString(){
+        return "Item da estante\n" + "Tipo ebook: " + this.tipo + "\n" + ebook;
+    }
 }

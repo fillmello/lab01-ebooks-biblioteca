@@ -1,5 +1,7 @@
 package br.edu.pucminas.biblioteca.modelo;
 
+import java.util.Optional;
+
 /** Aluno da universidade (UC02, UC03 e UC04). */
 public class Aluno extends Usuario {
 
@@ -26,12 +28,22 @@ public class Aluno extends Usuario {
         return stringBuilder.toString();
     }
     public boolean removerEBook(EBook ebook) {
-        // TODO: implementar na Sprint 3
+        if (estante.remover(ebook)){
+            System.err.println("Livro " + ebook.getTitulo() + " removido com sucesso");
+            return true;
+        }
+        System.err.println("Não foi possivel remover o livro " + ebook.getTitulo() + " tente novamente");
         return false;
     }
 
     public boolean acessarEBook(EBook ebook) {
-        // TODO: implementar na Sprint 3
+        Optional<ItemEstante> itemEstante = estante.listar().stream().filter(ebookAux -> ebookAux.getEBook().equals(ebook)).findFirst();
+        if (itemEstante.isPresent()){
+            ItemEstante itemEstanteAux = itemEstante.get();
+            System.err.println("Acesso ao EBOOK\nTipo: " + itemEstanteAux.getTipo() + "\n" + itemEstanteAux.getEBook());
+            return true;
+        }
+        System.err.println("Não foi possivel acessar o ebook, tente novamente");
         return false;
     }
 

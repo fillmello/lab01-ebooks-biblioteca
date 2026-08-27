@@ -90,7 +90,7 @@ public class App {
             arquivoBibliotecarios.close();
             arquivoAlunos.close();
 
-            System.out.println("Catálogo salvo com sucesso!");
+            System.out.println("Catálogo, Aluno e bibliotecarios salvos com sucesso!");
 
         } catch (Exception e) {
             System.out.println("Erro ao salvar catálogo: " + e.getMessage());
@@ -124,20 +124,108 @@ public class App {
     }
 
     public static int menuBibliotecario(Bibliotecario bibliotecario) {
-        System.out.println("\n===== SISTEMA DE EBOOKS " + bibliotecario.getNome() + " =====");
+        System.out.println("\n===== SISTEMA DE EBOOKS == " + bibliotecario.getNome() + " =====");
         System.out.println("1 - Cadastrar Ebook");
+        System.out.println("2 - Consultar Aluno");
+        System.out.println("3 - Renovar Catalogo");
+        System.out.println("4 - Remover Ebook");
+
 
         System.out.println("0 - Sair");
         System.out.print("Escolha uma opção: ");
         return lerInteiro();
     }
 
-    public static void funcoesBibliotecario(Bibliotecario bibliotecario, Catalogo catalogo) {
+    public static void bibliotecarioConsultarAluno(List<Aluno> alunos){
+        if (alunos.isEmpty()){
+            System.err.println("Nenhum aluno cadastrado");
+            return;
+        }
+
+        for (int i = 0; i < alunos.size(); i++) {
+            System.out.println((i + 1) + " - " + alunos.get(i));
+            System.out.println("---");
+        }
+
+        System.err.println("Qual aluno voce deseja conultar (numero)");
+        int opcao = 0;
+        do {
+            opcao = lerInteiro();;
+            if (opcao < 1 || opcao > alunos.size()) {
+                System.out.println("Opção inválida!");
+                return;
+            }
+        } while (opcao < 1 || opcao > alunos.size());
+
+        Aluno aluno = alunos.get(opcao - 1);
+
+        System.out.println("Você selecionou:");
+        System.out.println(aluno);
+        System.out.println("Livros do(a) " + aluno.getNome());
+        for (ItemEstante itemEstante : aluno.getEstante().listar()){
+            System.err.println(itemEstante);
+            System.err.println("---");
+        }
+        System.out.println("Precione enter para sair");
+        scanner.nextLine();
+    }
+
+    public static void bibliotecarioRemoverEbook(Catalogo catalogo){
+        if (catalogo.listarEBooks().isEmpty()){
+            System.err.println("Nenhum livro cadastrado");
+            return;
+        }
+        for (int i = 0; i < catalogo.listarEBooks().size(); i++) {
+            System.out.println((i + 1) + " - " + catalogo.listarEBooks().get(i));
+            System.out.println("---");
+        }
+
+        System.err.println("Qual ebook voce deseja remover (numero)");
+        int opcao = 0;
+        do {
+            opcao = lerInteiro();;
+            if (opcao < 1 || opcao > catalogo.listarEBooks().size()) {
+                System.out.println("Opção inválida!");
+                return;
+            }
+        } while (opcao < 1 || opcao > catalogo.listarEBooks().size());
+
+        EBook ebook = catalogo.listarEBooks().get(opcao - 1);
+
+        System.out.println("Você selecionou:");
+        System.out.println(ebook);
+        System.out.println("Digite 1 para remover livro, digite outro valor para cancelar");
+        String valor = scanner.nextLine();
+        if (valor.equals("1")){
+            catalogo.removerEBook(ebook);
+        }
+
+        // quando um bibliotecario remover um ebook deve excluir nos alunos?
+    }
+
+    public static void funcoesBibliotecario(Bibliotecario bibliotecario, List<Aluno> alunos, Catalogo catalogo) {
         int sair = 0;
         while (sair == 0) {
             switch (menuBibliotecario(bibliotecario)) {
                 case 1:
                     bibliotecario.cadastrarEBook(criarEBook(), catalogo);
+                    break;
+
+                case 2:
+                    bibliotecarioConsultarAluno(alunos);
+                    break;
+
+                case 3:
+                    catalogo.renovar(alunos);
+                    System.err.println("Assim ficou os ebook da biblioteca");
+                    for (EBook ebook : catalogo.listarEBooks()){
+                        System.err.println(ebook);
+                        System.err.println("---");
+                    }
+                    break;
+
+                case 4:
+                    bibliotecarioRemoverEbook(catalogo);
                     break;
 
                 default:
@@ -148,9 +236,11 @@ public class App {
     }
 
     public static int menuAluno(Aluno aluno) {
-        System.out.println("\n===== SISTEMA DE EBOOKS" + aluno.getNome() + "=====");
+        System.out.println("\n===== SISTEMA DE EBOOKS == " + aluno.getNome() + "=====");
         System.out.println("1 - Adicionar livros");
         System.out.println("2 - Listar seus livros");
+        System.out.println("3 - Acessar Ebook");
+        System.out.println("4 - Remover Ebook");
 
         System.out.println("0 - Sair");
         System.out.print("Escolha uma opção: ");
@@ -158,8 +248,75 @@ public class App {
     }
 
     public static void alunoListarLivros(Aluno aluno){
+        if (aluno.getEstante().listar().isEmpty()){
+            System.err.println("Voce nao possui livros na estante");
+            return;
+        }
+
         System.err.println("Livros de: " + aluno.getNome());
         System.err.println(aluno.listarEbooks());
+    }
+
+    public static void alunoAcessarEbook(Aluno aluno){
+        if (aluno.getEstante().listar().isEmpty()){
+            System.err.println("Voce nao possui livros na estante");
+            return;
+        }
+
+        for (int i = 0; i < aluno.getEstante().listar().size(); i++) {
+            System.out.println((i + 1) + " - " + aluno.getEstante().listar().get(i));
+            System.out.println("---");
+        }
+
+        System.err.println("Qual ebook voce deseja selecionar (numero)");
+        int opcao = 0;
+        do {
+            opcao = lerInteiro();;
+            if (opcao < 1 || opcao > aluno.getEstante().listar().size()) {
+                System.out.println("Opção inválida!");
+                return;
+            }
+        } while (opcao < 1 || opcao > aluno.getEstante().listar().size());
+
+        ItemEstante itemEstanteSelecionado = aluno.getEstante().listar().get(opcao - 1);
+
+        System.out.println("Você selecionou:");
+        System.out.println(itemEstanteSelecionado);
+        System.out.println("Precione enter para sair");
+        scanner.nextLine();
+
+    }
+
+    public static void alunoRemoveEbook(Aluno aluno){
+        if (aluno.getEstante().listar().isEmpty()){
+            System.err.println("Voce nao possui livros na estante");
+            return;
+        }
+        for (int i = 0; i < aluno.getEstante().listar().size(); i++) {
+            System.out.println((i + 1) + " - " + aluno.getEstante().listar().get(i));
+            System.out.println("---");
+        }
+
+        System.err.println("Qual ebook voce deseja remover (numero)");
+        int opcao = 0;
+        do {
+            opcao = lerInteiro();;
+            if (opcao < 1 || opcao > aluno.getEstante().listar().size()) {
+                System.out.println("Opção inválida!");
+                return;
+            }
+        } while (opcao < 1 || opcao > aluno.getEstante().listar().size());
+
+        ItemEstante itemEstanteSelecionado = aluno.getEstante().listar().get(opcao - 1);
+
+        System.out.println("Você selecionou:");
+        System.out.println(itemEstanteSelecionado);
+        System.out.println("Digite 1 para remover livro, digite outro valor para cancelar");
+        String valor = scanner.nextLine();
+        if (valor.equals("1")){
+            aluno.removerEBook(itemEstanteSelecionado.getEBook());
+        }
+
     }
 
 
@@ -198,6 +355,7 @@ public class App {
         aluno.adicionarEBook(ebookSelecionado, opcao == 1 ? TipoLeitura.OBRIGATORIA : TipoLeitura.LIVRE );
     }
 
+
     public static void funcoesAluno(Aluno aluno, Catalogo catalogo) {
         int sair = 0;
         while (sair == 0) {
@@ -208,6 +366,15 @@ public class App {
 
                 case 2:
                     alunoListarLivros(aluno);
+                    break;
+
+                case 3:
+                    alunoAcessarEbook(aluno);
+                    break;
+
+                case 4:
+                    alunoRemoveEbook(aluno);
+                    break;
 
                 default:
                     sair = 1;
@@ -217,7 +384,7 @@ public class App {
     }
 
 
-    public static void loginBibliotecario(List<Bibliotecario> bibliotecarios, Catalogo catalogo) {
+    public static void loginBibliotecario(List<Bibliotecario> bibliotecarios, List<Aluno> alunos, Catalogo catalogo) {
         String registro = "";
         do {
             System.out.print("Digite sua matricula: ");
@@ -244,7 +411,7 @@ public class App {
         
 
         try {
-            funcoesBibliotecario(biblitecarioTentativa.get(), catalogo);
+            funcoesBibliotecario(biblitecarioTentativa.get(), alunos, catalogo);
         } catch (Exception e) {
             System.err.println("Um erro inesperado aconteceu, tente novamnete");
             return;
@@ -404,7 +571,7 @@ public class App {
                     break;
 
                 case 4:
-                    loginBibliotecario(bibliotecarios, catalogo);
+                    loginBibliotecario(bibliotecarios, alunos, catalogo);
                     break;
 
                 case 5:

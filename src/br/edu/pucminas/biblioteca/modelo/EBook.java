@@ -45,6 +45,7 @@ public class EBook implements Serializable {
         stringBuilder.append("Nome: " + this.titulo);
         stringBuilder.append("\nEditora: " + this.editora);
         stringBuilder.append("\nCategoria: " + this.categoria);
+        stringBuilder.append("\nFormato arquivo: " + this.formato);
         //FIXME
         return stringBuilder.toString();
     }

@@ -47,8 +47,8 @@ public class Estante implements Serializable {
 
     public boolean remover(EBook ebook) {
         Optional<ItemEstante> itemComEbook = itens.stream().filter(item -> item.getEBook().equals(ebook)).findFirst();
-        if (itemComEbook != null){
-            itens.remove(itemComEbook);
+        if (itemComEbook.isPresent()){
+            itens.remove(itemComEbook.get());
             return true;
         }
         return false;
