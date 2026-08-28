@@ -19,7 +19,6 @@ public class Estante implements Serializable {
 
     public boolean adicionar(EBook ebook, TipoLeitura tipo) {
 
-         
         // FIXME
         if (tipo == TipoLeitura.LIVRE) {
             if (itens.stream().filter(Auxebook -> Auxebook.getTipo() == TipoLeitura.LIVRE).count() < LIMITE_LIVRES) {
@@ -31,7 +30,8 @@ public class Estante implements Serializable {
                 return false;
             }
         } else {
-            if (itens.stream().filter(Auxebook -> Auxebook.getTipo() == TipoLeitura.OBRIGATORIA).count() < LIMITE_OBRIGATORIOS) {
+            if (itens.stream().filter(Auxebook -> Auxebook.getTipo() == TipoLeitura.OBRIGATORIA)
+                    .count() < LIMITE_OBRIGATORIOS) {
                 itens.add(new ItemEstante(ebook, tipo, LocalDate.now()));
                 System.err.println(ebook.getTitulo() + " adicionado com sucesso");
                 return true;
@@ -45,12 +45,17 @@ public class Estante implements Serializable {
         // return false;
     }
 
-    public boolean remover(EBook ebook) {
-        Optional<ItemEstante> itemComEbook = itens.stream().filter(item -> item.getEBook().equals(ebook)).findFirst();
-        if (itemComEbook.isPresent()){
-            itens.remove(itemComEbook.get());
-            return true;
-        }
+    public boolean remover(EBook ebook) throws Exception {
+        // if (periodoAcesso.estaAberto()) {
+            Optional<ItemEstante> itemComEbook = itens.stream().filter(item -> item.getEBook().equals(ebook))
+                    .findFirst();
+            if (itemComEbook.isPresent()) {
+                itens.remove(itemComEbook.get());
+                return true;
+            }
+        // } else {
+        //     throw new Exception("Fora do periodo de acesso");
+        // }
         return false;
     }
 
@@ -70,7 +75,7 @@ public class Estante implements Serializable {
 
     public boolean contemEBook(EBook ebook) {
         Optional<ItemEstante> itemComEbook = itens.stream().filter(item -> item.getEBook().equals(ebook)).findFirst();
-        if (itemComEbook != null){
+        if (itemComEbook != null) {
             return true;
         }
         return false;

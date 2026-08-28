@@ -8,7 +8,10 @@ public class Licenca implements Serializable{
     private int limiteAcessosSimultaneos;
     private int acessosAtivos;
 
-    public Licenca(int limiteAcessosSimultaneos) {
+    public Licenca(int limiteAcessosSimultaneos) throws Exception {
+        if (limiteAcessosSimultaneos > 60){
+            throw new Exception("Um livro nao pode ter mas de 60 acessos");
+        }
         this.limiteAcessosSimultaneos = limiteAcessosSimultaneos;
         this.acessosAtivos = 0;
     }

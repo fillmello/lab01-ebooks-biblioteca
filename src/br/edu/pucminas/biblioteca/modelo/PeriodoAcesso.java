@@ -24,4 +24,9 @@ public class PeriodoAcesso implements Serializable{
     public boolean jaEncerrou() {
         return !estaAberto();
     }
+
+    @Override
+    public String toString(){
+        return "Data inicial: " + dataInicio + "\nData Final: " + dataFim;
+    }
 }

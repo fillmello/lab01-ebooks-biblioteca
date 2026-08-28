@@ -132,6 +132,7 @@ public class App {
         System.out.println("3 - Renovar Catalogo");
         System.out.println("4 - Remover Ebook");
         System.out.println("5 - Adicionar periodo de acesso");
+        System.out.println("6 - Remover periodo de acesso");
 
         System.out.println("0 - Sair");
         System.out.print("Escolha uma opção: ");
@@ -207,6 +208,39 @@ public class App {
         // quando um bibliotecario remover um ebook deve excluir nos alunos?
     }
 
+    public static void bibliotecarioRemovePeriodoDeAcesso(Catalogo catalogo) {
+        if (catalogo.getPeriodoAcesso().isEmpty()) {
+            System.err.println("Nenhum periodo de acesso cadastrado");
+            return;
+        }
+        for (int i = 0; i < catalogo.getPeriodoAcesso().size(); i++) {
+            System.out.println((i + 1) + " - " + catalogo.getPeriodoAcesso().get(i));
+            System.out.println("---");
+        }
+
+        System.err.println("Qual periodod de acesso voce deseja remover (numero)");
+        int opcao = 0;
+        do {
+            opcao = lerInteiro();
+            ;
+            if (opcao < 1 || opcao > catalogo.getPeriodoAcesso().size()) {
+                System.out.println("Opção inválida!");
+                return;
+            }
+        } while (opcao < 1 || opcao > catalogo.getPeriodoAcesso().size());
+
+
+        System.out.println("Você selecionou:");
+        System.out.println(catalogo.getPeriodoAcesso().get(opcao - 1));
+        System.out.println("Digite 1 para remover livro, digite outro valor para cancelar");
+        String valor = scanner.nextLine();
+        if (valor.equals("1")) {
+            catalogo.removerPeriodoAcesso(opcao - 1);
+            System.err.println("Removido com sucesso");
+        }
+
+
+    }    
     public static void bibliotecarioAdicionaPeriodoDeAcesso(Catalogo catalogo) {
         
         Boolean correto = false;
@@ -257,10 +291,16 @@ public class App {
                     case 3:
                         catalogo.renovar(alunos);
                         System.err.println("Assim ficou os ebook da biblioteca");
-                        for (EBook ebook : catalogo.listarEBooks()) {
-                            System.err.println(ebook);
-                            System.err.println("---");
+                        if (catalogo.listarEBooks().isEmpty()){
+                            System.err.println("Nenhum livro");
+                        } else {
+                            for (EBook ebook : catalogo.listarEBooks()) {
+                                System.err.println(ebook);
+                                System.err.println("---");
+                            }
                         }
+
+                        
                         break;
 
                     case 4:
@@ -269,6 +309,10 @@ public class App {
 
                     case 5:
                         bibliotecarioAdicionaPeriodoDeAcesso(catalogo);
+                        break;
+
+                    case 6:
+                        bibliotecarioRemovePeriodoDeAcesso(catalogo);
                         break;
 
                     default:
@@ -335,7 +379,7 @@ public class App {
 
     }
 
-    public static void alunoRemoveEbook(Aluno aluno) {
+    public static void alunoRemoveEbook(Aluno aluno, Catalogo catalogo) throws Exception {
         if (aluno.getEstante().listar().isEmpty()) {
             System.err.println("Voce nao possui livros na estante");
             return;
@@ -363,12 +407,23 @@ public class App {
         System.out.println("Digite 1 para remover livro, digite outro valor para cancelar");
         String valor = scanner.nextLine();
         if (valor.equals("1")) {
-            aluno.removerEBook(itemEstanteSelecionado.getEBook());
+            if (catalogo.podeAdicionarRemoverEbook()){
+                aluno.removerEBook(itemEstanteSelecionado.getEBook());
+            } else {
+                System.err.println("Não é possivel adicionar livros");
+            }
         }
 
     }
 
-    public static void alunoAddLivro(Aluno aluno, Catalogo catalogo) {
+    public static void alunoAddLivro(Aluno aluno, Catalogo catalogo) throws Exception {
+        if (catalogo.listarEBooks().isEmpty()){
+            throw new Exception("Sem livros cadastradaos, contete um bibliotecario ");
+        }
+        if (!catalogo.podeAdicionarRemoverEbook()){
+            throw new Exception("Fora do periodo de acesso, contade um bibliotecario");
+        }
+
         for (int i = 0; i < catalogo.listarEBooks().size(); i++) {
             System.out.println((i + 1) + " - " + catalogo.listarEBooks().get(i));
             System.out.println("---");
@@ -422,7 +477,7 @@ public class App {
                         break;
 
                     case 4:
-                        alunoRemoveEbook(aluno);
+                        alunoRemoveEbook(aluno, catalogo);
                         break;
 
                     default:
@@ -504,7 +559,7 @@ public class App {
         }
     }
 
-    public static EBook criarEBook() {
+    public static EBook criarEBook() throws Exception {
 
         System.out.println("===== CRIAR EBOOK =====");
 
@@ -553,13 +608,13 @@ public class App {
                 licenca);
     }
 
-    public static Aluno criarAluno() {
+    public static Aluno criarAluno(String id) {
 
         System.out.println("===== CADASTRAR ALUNO =====");
 
         // FIXME
-        System.out.print("ID: ");
-        String id = scanner.nextLine();
+        // System.out.print("ID: ");
+        // String id = scanner.nextLine();
 
         System.out.print("Nome: ");
         String nome = scanner.nextLine();
@@ -577,13 +632,13 @@ public class App {
                 matricula);
     }
 
-    public static Bibliotecario criarBibliotecario() {
+    public static Bibliotecario criarBibliotecario(String id) {
 
         System.out.println("===== CADASTRAR BIBLIOTECÁRIO =====");
 
         // FIXME
-        System.out.print("ID: ");
-        String id = scanner.nextLine();
+        // System.out.print("ID: ");
+        // String id = scanner.nextLine();
 
         System.out.print("Nome: ");
         String nome = scanner.nextLine();
@@ -610,11 +665,11 @@ public class App {
             int sair = 0;
             switch (menu()) {
                 case 1:
-                    alunos.add(criarAluno());
+                    alunos.add(criarAluno(String.valueOf(alunos.size() + 1)));
                     break;
 
                 case 2:
-                    bibliotecarios.add(criarBibliotecario());
+                    bibliotecarios.add(criarBibliotecario(String.valueOf(bibliotecarios.size() + 1)));
                     break;
 
                 case 3:
@@ -625,20 +680,20 @@ public class App {
                     loginBibliotecario(bibliotecarios, alunos, catalogo);
                     break;
 
-                case 5:
-                    for (Aluno aluno : alunos) {
-                        System.err.println(aluno);
-                    }
-                    System.err.println("FIM ALUNOS ---");
-                    for (Bibliotecario aluno : bibliotecarios) {
-                        System.err.println(aluno);
-                    }
-                    System.err.println("FIM BIBLIO ---");
-                    for (EBook aluno : catalogo.listarEBooks()) {
-                        System.err.println(aluno);
-                    }
-                    System.err.println("FIM LIVROS ---");
-                    break;
+                // case 5:
+                //     for (Aluno aluno : alunos) {
+                //         System.err.println(aluno);
+                //     }
+                //     System.err.println("FIM ALUNOS ---");
+                //     for (Bibliotecario aluno : bibliotecarios) {
+                //         System.err.println(aluno);
+                //     }
+                //     System.err.println("FIM BIBLIO ---");
+                //     for (EBook aluno : catalogo.listarEBooks()) {
+                //         System.err.println(aluno);
+                //     }
+                //     System.err.println("FIM LIVROS ---");
+                //     break; 
 
                 default:
                     salvar(catalogo, bibliotecarios, alunos);

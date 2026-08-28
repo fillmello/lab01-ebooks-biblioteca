@@ -1,5 +1,6 @@
 package br.edu.pucminas.biblioteca.modelo;
 
+import java.io.EOFException;
 import java.io.Serializable;
 import java.time.LocalDate;
 import java.util.ArrayList;
@@ -22,27 +23,33 @@ public class Catalogo implements Serializable {
         periodosAcesso.add(new PeriodoAcesso(inicio, fim));
     }
 
-    public void adicionarEBook(EBook ebook) throws Exception {
-        Boolean podeAdicionarPeriodo = false;
+    public void removerPeriodoAcesso(Integer indice){
+        periodosAcesso.remove(periodosAcesso.get(indice));
+    }
+
+    public boolean podeAdicionarRemoverEbook() throws Exception{
         if (periodosAcesso.isEmpty()){
             throw new Exception("Sem periodos de acesso, peça a um bibliotecario para adicionar");
         }
         for (PeriodoAcesso periodoAcesso : periodosAcesso){
             if (periodoAcesso.estaAberto()){
-                podeAdicionarPeriodo = true;
-                break;
+                return true;
             }
         }
+        return false;
+    }
 
-        if (podeAdicionarPeriodo){
-            if (!ebooks.contains(ebook)) {
-                ebooks.add(ebook);
-            } else {
-                throw new Exception("Ebook ja  existe");
-            }
+    public void adicionarEBook(EBook ebook) throws Exception {
+        // if (!podeAdicionarRemoverEbook()){
+        //     throw new Exception("Não é possivel adicionar ebooks, fora do periodo de acesso");
+        // }
+
+        if (!ebooks.contains(ebook)) {
+            ebooks.add(ebook);
         } else {
-            throw new Exception("Fora do periodo de acesso");
+            throw new Exception("Ebook ja  existe");
         }
+       
         
     }
 
@@ -79,6 +86,10 @@ public class Catalogo implements Serializable {
 
         ebooks = novosEbooks;
         return this;
+    }
+
+    public List<PeriodoAcesso> getPeriodoAcesso() {
+        return periodosAcesso;
     }
 
     public String getSemestre() {

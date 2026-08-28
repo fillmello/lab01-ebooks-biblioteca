@@ -34,14 +34,13 @@ public class Aluno extends Usuario {
         }
         return stringBuilder.toString();
     }
-    public boolean removerEBook(EBook ebook) {
+    public boolean removerEBook(EBook ebook) throws Exception {
         if (estante.remover(ebook)){
             System.err.println("Livro " + ebook.getTitulo() + " removido com sucesso");
             ebook.getLicenca().liberarAcesso();
             return true;
         }
-        System.err.println("Não foi possivel remover o livro " + ebook.getTitulo() + " tente novamente");
-        return false;
+        throw new Exception("Não foi possivel remover o livro " + ebook.getTitulo() + " tente novamente");
     }
 
     public boolean acessarEBook(EBook ebook) {
