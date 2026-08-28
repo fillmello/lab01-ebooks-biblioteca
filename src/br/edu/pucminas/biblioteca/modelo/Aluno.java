@@ -15,7 +15,15 @@ public class Aluno extends Usuario {
     }
 
     public boolean adicionarEBook(EBook ebook, TipoLeitura tipo) {
-        estante.adicionar(ebook, tipo);
+        if (ebook.getLicenca().temVagaDisponivel()){
+            estante.adicionar(ebook, tipo);
+            ebook.getLicenca().ocuparAcesso();
+            return true;
+        } 
+
+        System.err.println("Ebook não possui vaga disponivel");
+
+        
         return false;
     }
 
@@ -30,6 +38,7 @@ public class Aluno extends Usuario {
     public boolean removerEBook(EBook ebook) {
         if (estante.remover(ebook)){
             System.err.println("Livro " + ebook.getTitulo() + " removido com sucesso");
+            ebook.getLicenca().liberarAcesso();
             return true;
         }
         System.err.println("Não foi possivel remover o livro " + ebook.getTitulo() + " tente novamente");

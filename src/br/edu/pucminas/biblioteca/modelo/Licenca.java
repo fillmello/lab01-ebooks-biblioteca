@@ -14,17 +14,21 @@ public class Licenca implements Serializable{
     }
 
     public boolean temVagaDisponivel() {
-        // TODO: implementar na Sprint 3
-        return false;
+        return limiteAcessosSimultaneos < acessosAtivos;
     }
 
     public boolean ocuparAcesso() {
-        // TODO: implementar na Sprint 3
+        if (temVagaDisponivel()){
+            acessosAtivos++;
+            return true;
+        }
         return false;
     }
 
     public void liberarAcesso() {
-        // TODO: implementar na Sprint 3
+        if (acessosAtivos > 0){
+            acessosAtivos--;
+        }
     }
 
     public int getAcessosAtivos() {

@@ -14,7 +14,7 @@ public class Bibliotecario extends Usuario {
         this.registroFuncional = registroFuncional;
     }
 
-    public void cadastrarEBook(EBook ebook, Catalogo catalogo) {
+    public void cadastrarEBook(EBook ebook, Catalogo catalogo) throws Exception {
         catalogo.adicionarEBook(ebook);
     }
 

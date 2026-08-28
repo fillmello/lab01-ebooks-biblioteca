@@ -14,13 +14,14 @@ public class PeriodoAcesso implements Serializable{
         this.dataFim = dataFim;
     }
 
-    public boolean estaAberto(LocalDate data) {
-        // TODO: implementar na Sprint 3
-        return false;
+    // public boolean estaAberto(LocalDate data) {
+    public boolean estaAberto() {
+        LocalDate agora = LocalDate.now();
+        return agora.isAfter(dataInicio) && agora.isBefore(dataFim);
     }
 
-    public boolean jaEncerrou(LocalDate data) {
-        // TODO: implementar na Sprint 3
-        return false;
+    // public boolean jaEncerrou(LocalDate data) {
+    public boolean jaEncerrou() {
+        return !estaAberto();
     }
 }

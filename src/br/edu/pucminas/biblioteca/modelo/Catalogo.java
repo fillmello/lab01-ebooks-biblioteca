@@ -1,6 +1,7 @@
 package br.edu.pucminas.biblioteca.modelo;
 
 import java.io.Serializable;
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -17,10 +18,32 @@ public class Catalogo implements Serializable {
         this.semestre = semestre;
     }
 
-    public void adicionarEBook(EBook ebook) {
-        if (!ebooks.contains(ebook)) {
-            ebooks.add(ebook);
+    public void adicionarPeriodoDeAcesso(LocalDate inicio, LocalDate fim){
+        periodosAcesso.add(new PeriodoAcesso(inicio, fim));
+    }
+
+    public void adicionarEBook(EBook ebook) throws Exception {
+        Boolean podeAdicionarPeriodo = false;
+        if (periodosAcesso.isEmpty()){
+            throw new Exception("Sem periodos de acesso, peça a um bibliotecario para adicionar");
         }
+        for (PeriodoAcesso periodoAcesso : periodosAcesso){
+            if (periodoAcesso.estaAberto()){
+                podeAdicionarPeriodo = true;
+                break;
+            }
+        }
+
+        if (podeAdicionarPeriodo){
+            if (!ebooks.contains(ebook)) {
+                ebooks.add(ebook);
+            } else {
+                throw new Exception("Ebook ja  existe");
+            }
+        } else {
+            throw new Exception("Fora do periodo de acesso");
+        }
+        
     }
 
     public void removerEBook(EBook ebook) {
