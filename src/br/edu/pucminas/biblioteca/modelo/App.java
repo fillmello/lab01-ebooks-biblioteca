@@ -131,6 +131,7 @@ public class App {
         System.out.println("2 - Consultar Aluno");
         System.out.println("3 - Renovar Catalogo");
         System.out.println("4 - Remover Ebook");
+        System.out.println("5 - Adicionar periodo de acesso");
 
         System.out.println("0 - Sair");
         System.out.print("Escolha uma opção: ");
@@ -246,6 +247,7 @@ public class App {
                 switch (menuBibliotecario(bibliotecario)) {
                     case 1:
                         bibliotecario.cadastrarEBook(criarEBook(), catalogo);
+                        System.err.println("Ebook adicionado com sucesso!");
                         break;
 
                     case 2:
@@ -399,6 +401,7 @@ public class App {
         } while (opcao < 1 || opcao > 2);
 
         aluno.adicionarEBook(ebookSelecionado, opcao == 1 ? TipoLeitura.OBRIGATORIA : TipoLeitura.LIVRE);
+        
     }
 
     public static void funcoesAluno(Aluno aluno, Catalogo catalogo) {

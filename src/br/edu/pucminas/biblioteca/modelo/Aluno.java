@@ -30,8 +30,7 @@ public class Aluno extends Usuario {
     public String listarEbooks(){
         StringBuilder stringBuilder = new StringBuilder();
         for (ItemEstante itemEstante : estante.listar()){
-            stringBuilder.append("Tipo: " + itemEstante.getTipo() + "\n");
-            stringBuilder.append(itemEstante.getEBook());
+            stringBuilder.append(itemEstante);
         }
         return stringBuilder.toString();
     }

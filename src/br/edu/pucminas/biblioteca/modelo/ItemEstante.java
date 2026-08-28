@@ -34,6 +34,6 @@ public class ItemEstante implements Serializable {
 
     @Override
     public String toString(){
-        return "Item da estante\n" + "Tipo ebook: " + this.tipo + "\n" + ebook;
+        return "===Item da estante===\n" + "Tipo ebook: " + this.tipo + "\n" + ebook;
     }
 }

@@ -14,7 +14,7 @@ public class Licenca implements Serializable{
     }
 
     public boolean temVagaDisponivel() {
-        return limiteAcessosSimultaneos < acessosAtivos;
+        return acessosAtivos < limiteAcessosSimultaneos;
     }
 
     public boolean ocuparAcesso() {

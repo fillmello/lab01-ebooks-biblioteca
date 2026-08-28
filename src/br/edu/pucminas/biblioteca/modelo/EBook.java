@@ -42,11 +42,13 @@ public class EBook implements Serializable {
     @Override
     public String toString(){
         StringBuilder stringBuilder = new StringBuilder();
-        stringBuilder.append("Nome: " + this.titulo);
+        stringBuilder.append("\n====EBOOK====");
+        stringBuilder.append("\nTitulo: " + this.titulo);
         stringBuilder.append("\nEditora: " + this.editora);
         stringBuilder.append("\nCategoria: " + this.categoria);
         stringBuilder.append("\nFormato arquivo: " + this.formato);
-        //FIXME
+        stringBuilder.append("\n========\n\n");
+        
         return stringBuilder.toString();
     }
 }
