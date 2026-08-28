@@ -1,17 +1,17 @@
-# Contribuições, Sprint 2 (Lab01S02), João Victor
+# Contribuições, Sprint 3 (Lab01S02), João Victor
 
-## Semana 1
+## Semana 3
 
 Contribuição: mantivemos a divisão da Sprint 1 
-imprementação das classes dos casos de uso 5 ao 8. 
 
-Modelei em PlantUML as classes Bibliotecario, EBook, Catalogo, PeriodoAcesso,
-SistemaEstatisticas e os enums Formato e Categoria, e criei as classes Java correspondentes com
-atributos, construtores e stubs dos métodos.
+-> imprementação das classes no contexto dos casos de uso 5 ao 8. 
+-> Imprementei as classe de acordo com o enunciado e criei o App para o funcionamento do sistema
+-> Separacao das funcionalidades por login
+-> tratamento de inputs
 
-Decisões: usei agregação entre Catalogo e EBook, porque o eBook não deixa de existir quando
-sai do catálogo de um semestre, e composição entre Catalogo e PeriodoAcesso, porque o período
-só faz sentido dentro do semestre a que pertence.
+Decisões: 
+-> Periodo de acesso coloquei para pegar a data de agora 
+-> referi testar e usar o Serializable
 
-Uso de IA: usei o Claude (Anthropic) para revisar os nomes dos métodos e conferir se as
-multiplicidades batiam com as regras do enunciado.
+
+Uso de IA: usei o Chat GPT para relembrar comandos.

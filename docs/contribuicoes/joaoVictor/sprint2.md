@@ -1,6 +1,6 @@
 # Contribuições, Sprint 2 (Lab01S02), João Victor
 
-## Semana 1
+## Semana 2
 
 Contribuição: mantivemos a divisão da Sprint 1 e fiquei com a agregação do catálogo (casos 05 a
 08). Modelei em PlantUML as classes Bibliotecario, EBook, Catalogo, PeriodoAcesso,
