@@ -105,10 +105,7 @@ public class MenuPrincipal {
         }
     }
 
-    /**
-     * Cria um login de aluno para quem ainda nao tem cadastro. So cria aluno: pelo
-     * enunciado, quem mantem os dados dos bibliotecarios e a equipe da biblioteca.
-     */
+
     public static void criarLogin() {
         System.out.println("\n===== CRIAR LOGIN DE ALUNO =====");
         String id = perguntar("Id de login");
@@ -189,7 +186,6 @@ public class MenuPrincipal {
                 System.out.println("Nao foi possivel concluir a acao: " + e.getMessage());
             }
         }
-        // Ao sair, as licencas ocupadas pelo aluno na sessao voltam a ficar disponiveis.
         acessosAbertos.forEach(aluno::encerrarAcessoEBook);
     }
 
@@ -251,9 +247,7 @@ public class MenuPrincipal {
     }
 
     /**
-     * UC04 - Acessar eBook, respeitando o limite de acessos simultaneos da licenca.
-     * Cada acesso aberto ocupa uma licenca, entao o mesmo aluno pode ocupar mais de
-     * uma ao abrir o eBook em dispositivos diferentes.
+     * UC04 - Acessar eBook
      */
     public static void alunoAcessaEBook(Aluno aluno, List<EBook> acessosAbertos) {
         ItemEstante item = selecionar("Qual eBook voce deseja acessar", aluno.getEstante().listar());
