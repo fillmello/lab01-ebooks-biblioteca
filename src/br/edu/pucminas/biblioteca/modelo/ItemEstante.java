@@ -30,4 +30,10 @@ public class ItemEstante {
     public LocalDate getDataAdicao() {
         return dataAdicao;
     }
+
+    @Override
+    public String toString() {
+        return ebook.getTitulo() + " | leitura " + tipo.toString().toLowerCase()
+                + " | adicionado em " + dataAdicao;
+    }
 }

@@ -57,6 +57,7 @@ class ItemEstante {
   +getEBook(): EBook
   +getTipo(): TipoLeitura
   +getDataAdicao(): LocalDate
+  +toString(): String
 }
 
 enum TipoLeitura {
@@ -148,10 +149,14 @@ class SistemaEstatisticas {
 ' ===== Interface e persistencia, acrescentadas na Sprint 3 =====
 package interface <<Rectangle>> {
   class MenuPrincipal {
-    -catalogo: Catalogo
-    -usuarios: List<Usuario>
-    -estatisticas: SistemaEstatisticas
+    ~{static} catalogo: Catalogo
+    ~{static} usuarios: List<Usuario>
+    ~{static} estatisticas: SistemaEstatisticas
     +{static} main(args: String[]): void
+    +{static} menu(): int
+    +{static} menuAluno(aluno: Aluno): int
+    +{static} menuBibliotecario(bibliotecario: Bibliotecario): int
+    +{static} selecionar(titulo: String, itens: List<T>): T
   }
 }
 

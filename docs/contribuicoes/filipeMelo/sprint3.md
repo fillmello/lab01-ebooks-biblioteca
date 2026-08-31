@@ -19,12 +19,7 @@ estatística. Os métodos de estante retornam `boolean` em vez de lançar exceç
 atingido e período fechado são respostas esperadas do fluxo, não erros de programação; a interface
 transforma o `false` em uma mensagem explicando o motivo. O arquivo de estantes guarda a matrícula
 do aluno e o título do eBook, e não os objetos inteiros, para não repetir dados que já estão em
-`usuarios.txt` e `ebooks.txt`; por causa disso o título passou a identificar o eBook também no
-código, com `equals` e `hashCode` em `EBook`, e criei `Estante.restaurar` para recolocar os itens
-já gravados sem passar pela validação do período, que só vale para uma adição nova do aluno. A tela
-de login só cria conta de aluno: o enunciado diz que é a equipe da biblioteca que mantém as
-informações sobre os bibliotecários e os alunos, então deixar qualquer um se cadastrar como
-bibliotecário daria acesso ao cadastro de eBooks e à renovação do catálogo.
+`usuarios.txt` e `ebooks.txt`.
 
 Uso de IA: usei o Claude (Anthropic) para revisar o tratamento de erros do menu, conferir se as
 regras dos casos 01 a 04 estavam de acordo com o enunciado e apoiar a estrutura da interface de
