@@ -5,7 +5,7 @@
 Contribuição: mantivemos a divisão da Sprint 1 
 
 -> imprementação das classes no contexto dos casos de uso 5 ao 8. 
--> Imprementei as classe de acordo com o enunciado e criei o App para o funcionamento do sistema
+-> Implementei as classe de acordo com o enunciado e criei parte do App para o funcionamento do sistema
 -> Separacao das funcionalidades por login
 -> tratamento de inputs
 
