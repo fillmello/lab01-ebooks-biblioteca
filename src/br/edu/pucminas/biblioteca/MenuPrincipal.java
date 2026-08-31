@@ -7,10 +7,9 @@ import java.time.LocalDate;
 import java.time.format.DateTimeParseException;
 import java.util.*;
 
-/** Interface de linha de comando do sistema de gestao de eBooks. */
 public class MenuPrincipal {
 
-    /** Uma linha de menu: o texto mostrado ao usuario e a acao que ela executa. */
+
     private record Opcao(String rotulo, Runnable acao) {
     }
 
