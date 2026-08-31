@@ -13,11 +13,20 @@ public abstract class Usuario {
         this.senha = senha;
     }
 
+    /** Valida a senha informada no login contra a senha cadastrada (UC01). */
+    public boolean autenticar(String senhaInformada) {
+        return senha != null && senha.equals(senhaInformada);
+    }
+
     public String getId() {
         return id;
     }
 
     public String getNome() {
         return nome;
+    }
+
+    public String getSenha() {
+        return senha;
     }
 }
