@@ -146,16 +146,12 @@ class SistemaEstatisticas {
 }
 
 ' ===== Interface e persistencia, acrescentadas na Sprint 3 =====
-package interface_cli <<Rectangle>> {
+package interface <<Rectangle>> {
   class MenuPrincipal {
     -catalogo: Catalogo
     -usuarios: List<Usuario>
     -estatisticas: SistemaEstatisticas
     +{static} main(args: String[]): void
-  }
-  class DadosIniciais {
-    +{static} criarCatalogo(): Catalogo
-    +{static} criarUsuarios(): List<Usuario>
   }
 }
 
@@ -165,6 +161,7 @@ package persistencia <<Rectangle>> {
     -SEP: String
     +salvar(catalogo: Catalogo, usuarios: List<Usuario>, estatisticas: SistemaEstatisticas): void
     +carregar(): Dados
+    +dadosIniciais(): Dados
     -escrever(nome: String, linhas: List<String>): void
     -ler(nome: String, minimoDeCampos: int): List<String[]>
   }
@@ -199,7 +196,6 @@ SistemaEstatisticas "1" ..> "0..*" EBook : registra uso
 MenuPrincipal ..> Usuario
 MenuPrincipal ..> Catalogo
 MenuPrincipal ..> SistemaEstatisticas
-MenuPrincipal ..> DadosIniciais
 MenuPrincipal ..> BibliotecaRepositorioArquivo
 
 @enduml

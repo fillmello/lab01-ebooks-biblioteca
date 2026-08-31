@@ -76,7 +76,7 @@ public class BibliotecaRepositorioArquivo {
         escrever("estatisticas.txt", estatisticasTxt);
     }
 
-    /** Devolve null quando ainda nao ha dados gravados, ou seja, na primeira execucao. */
+    /** Devolve o que esta gravado ou, na primeira execucao, o acervo de exemplo. */
     public Dados carregar() throws IOException {
         Catalogo catalogo = null;
         for (String[] campos : ler("catalogo.txt", 2)) {
@@ -94,7 +94,10 @@ public class BibliotecaRepositorioArquivo {
                     : new Bibliotecario(campos[1], campos[2], campos[3], campos[4]));
         }
         if (catalogo == null || usuarios.isEmpty()) {
-            return null;
+            System.out.println("Primeira execucao: criando os dados iniciais em dados/.");
+            Dados iniciais = dadosIniciais();
+            salvar(iniciais.catalogo(), iniciais.usuarios(), iniciais.estatisticas());
+            return iniciais;
         }
 
         for (String[] campos : ler("ebooks.txt", 5)) {
@@ -114,6 +117,37 @@ public class BibliotecaRepositorioArquivo {
             estatisticas.restaurarAdicoes(campos[0], Integer.parseInt(campos[1]));
         }
         return new Dados(catalogo, usuarios, estatisticas);
+    }
+
+    /**
+     * Acervo de exemplo usado quando a pasta dados/ ainda esta vazia. Nao ha regra de
+     * negocio aqui: e so carga para o sistema abrir com conteudo para demonstrar.
+     */
+    public Dados dadosIniciais() {
+        LocalDate hoje = LocalDate.now();
+        Catalogo catalogo = new Catalogo(hoje.getYear() + "/" + (hoje.getMonthValue() <= 6 ? 1 : 2));
+        catalogo.adicionarPeriodo(new PeriodoAcesso(hoje.minusDays(30), hoje.plusDays(30)));
+        catalogo.adicionarEBook(new EBook("Engenharia de Software", "Pearson",
+                Formato.PDF, Categoria.TECNICO, new Licenca()));
+        catalogo.adicionarEBook(new EBook("Padroes de Projeto", "Bookman",
+                Formato.EPUB, Categoria.TECNICO, new Licenca()));
+        catalogo.adicionarEBook(new EBook("Banco de Dados", "Elsevier",
+                Formato.PDF, Categoria.TECNICO, new Licenca()));
+        catalogo.adicionarEBook(new EBook("Grande Sertao Veredas", "Companhia das Letras",
+                Formato.EPUB, Categoria.LITERATURA, new Licenca()));
+        catalogo.adicionarEBook(new EBook("Memorias Postumas de Bras Cubas", "Penguin",
+                Formato.EPUB, Categoria.LITERATURA, new Licenca()));
+        // Licenca com uma unica vaga, para demonstrar o bloqueio por acesso simultaneo.
+        catalogo.adicionarEBook(new EBook("Revista Brasileira de Computacao", "SBC",
+                Formato.PDF, Categoria.PERIODICO, new Licenca(1)));
+
+        List<Usuario> usuarios = new ArrayList<>(List.of(
+                new Bibliotecario("carla", "Carla Bibliotecaria", "123", "BIB-001"),
+                new Aluno("bruno", "Bruno Alves", "123", "2026001"),
+                new Aluno("ana", "Ana Souza", "123", "2026002"),
+                new Aluno("lucas", "Lucas Pereira", "123", "2026003"),
+                new Aluno("mariana", "Mariana Dias", "123", "2026004")));
+        return new Dados(catalogo, usuarios, new SistemaEstatisticas());
     }
 
     private void escrever(String nome, List<String> linhas) throws IOException {

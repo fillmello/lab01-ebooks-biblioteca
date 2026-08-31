@@ -137,9 +137,10 @@ uso responsável de IA da disciplina. O uso foi diferente em cada sprint:
 Na Sprint 3, os trechos abaixo foram **gerados com apoio do Claude**, e não escritos do zero pelos
 integrantes:
 
-- [DadosIniciais.java](src/br/edu/pucminas/biblioteca/DadosIniciais.java) — a classe inteira. São os
-  dados de exemplo criados na primeira execução (usuários e catálogo de demonstração). Não há regra
-  de negócio aqui: é carga de teste, para o protótipo abrir já com conteúdo para demonstrar.
+- O método `dadosIniciais()` de
+  [BibliotecaRepositorioArquivo.java](src/br/edu/pucminas/biblioteca/persistencia/BibliotecaRepositorioArquivo.java)
+  — são os dados de exemplo criados na primeira execução (usuários e catálogo de demonstração). Não
+  há regra de negócio aqui: é carga de teste, para o protótipo abrir já com conteúdo para demonstrar.
 - [MenuPrincipal.java](src/br/edu/pucminas/biblioteca/MenuPrincipal.java) — a ferramenta ajudou na
   estrutura da interface de linha de comando: o laço de menu, a leitura e validação da entrada do
   usuário e o tratamento das exceções. As regras de negócio chamadas por esse menu estão nas classes

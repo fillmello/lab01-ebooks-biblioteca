@@ -44,7 +44,8 @@ não mudaram: `Aluno` continua composto por `Estante`, `ItemEstante` continua ag
   protótipo precisa gravar cinco arquivos. Chegamos a criar uma classe por arquivo e desfizemos:
   as cinco eram o mesmo código de leitura e escrita, mudando só os campos de cada linha. Ficou um
   `BibliotecaRepositorioArquivo` com dois métodos de apoio, `escrever` e `ler`, reaproveitados por
-  todos os arquivos.
+  todos os arquivos. Os dados de exemplo da primeira execução também foram para lá, como o método
+  `dadosIniciais()`, em vez de uma classe separada.
 - **Retorno `boolean` nas regras de estante e exceção no cadastro.** Limite atingido e período
   fechado são respostas esperadas do fluxo e voltam como `false`; dado obrigatório faltando é erro
   de preenchimento e vira `IllegalArgumentException`, capturada pelo menu.

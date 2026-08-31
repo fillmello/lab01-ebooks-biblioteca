@@ -45,27 +45,18 @@ public class MenuPrincipal {
 
     private void carregarDados() {
         try {
-            BibliotecaRepositorioArquivo.Dados dados = repositorio.carregar();
-            if (dados != null) {
-                catalogo = dados.catalogo();
-                usuarios = dados.usuarios();
-                estatisticas = dados.estatisticas();
-                return;
-            }
-            System.out.println("Primeira execucao: criando os dados iniciais em dados/.");
-            usarDadosIniciais();
-            salvarDados();
+            aplicar(repositorio.carregar());
         } catch (RuntimeException | IOException e) {
             System.out.println("Nao foi possivel ler os dados gravados: " + e.getMessage());
             System.out.println("O sistema continua com os dados iniciais, sem gravar em disco.");
-            usarDadosIniciais();
+            aplicar(repositorio.dadosIniciais());
         }
     }
 
-    private void usarDadosIniciais() {
-        catalogo = DadosIniciais.criarCatalogo();
-        usuarios = DadosIniciais.criarUsuarios();
-        estatisticas = new SistemaEstatisticas();
+    private void aplicar(BibliotecaRepositorioArquivo.Dados dados) {
+        catalogo = dados.catalogo();
+        usuarios = dados.usuarios();
+        estatisticas = dados.estatisticas();
     }
 
     private void salvarDados() {
