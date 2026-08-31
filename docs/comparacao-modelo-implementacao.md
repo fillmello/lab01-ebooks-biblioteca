@@ -35,6 +35,11 @@ não mudaram: `Aluno` continua composto por `Estante`, `ItemEstante` continua ag
 - **Cadastro de período de acesso no menu do bibliotecário.** Não é um caso de uso do enunciado, mas
   sem ele o catálogo gerado pela renovação ficaria sem período e nenhum aluno conseguiria montar a
   estante no semestre seguinte.
+- **Uma única classe de persistência.** O roteiro mostra um `EBookRepositorioArquivo`, mas o
+  protótipo precisa gravar cinco arquivos. Chegamos a criar uma classe por arquivo e desfizemos:
+  as cinco eram o mesmo código de leitura e escrita, mudando só os campos de cada linha. Ficou um
+  `BibliotecaRepositorioArquivo` com dois métodos de apoio, `escrever` e `ler`, reaproveitados por
+  todos os arquivos.
 - **Retorno `boolean` nas regras de estante e exceção no cadastro.** Limite atingido e período
   fechado são respostas esperadas do fluxo e voltam como `false`; dado obrigatório faltando é erro
   de preenchimento e vira `IllegalArgumentException`, capturada pelo menu.

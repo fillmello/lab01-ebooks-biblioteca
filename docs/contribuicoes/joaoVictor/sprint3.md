@@ -18,8 +18,8 @@ regra dos 3 alunos estava aplicada como o enunciado descreve.
 
 ## Semana 2
 
-Contribuição: implementei a persistência do catálogo, dos eBooks e das estatísticas
-(`CatalogoRepositorioArquivo`, `EBookRepositorioArquivo` e `EstatisticasRepositorioArquivo`) e
+Contribuição: implementei, junto com o Filipe, a gravação e a leitura dos dados em arquivo
+(`BibliotecaRepositorioArquivo`), ficando com a parte do catálogo, dos eBooks e das estatísticas, e
 montei o menu do bibliotecário, incluindo o cadastro dos períodos de acesso do semestre.
 
 Decisões: usei ponto e vírgula como separador dos campos, como sugere o roteiro, por ser simples de

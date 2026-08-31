@@ -21,12 +21,14 @@ commit.
 
 ## Semana 2
 
-Contribuição: implementei a persistência das estantes e dos usuários
-(`EstanteRepositorioArquivo` e `UsuarioRepositorioArquivo`) e integrei o menu do aluno à
-persistência, gravando os dados a cada ação que altera a estante.
+Contribuição: implementei, junto com o João Victor, a gravação e a leitura dos dados em arquivo
+(`BibliotecaRepositorioArquivo`), ficando com a parte das estantes e dos usuários, e integrei o
+menu do aluno à persistência, gravando os dados a cada ação que altera a estante.
 
 Decisões: o arquivo de estantes guarda a matrícula do aluno e o título do eBook, e não os objetos
 inteiros, para não repetir em dois arquivos os dados que já estão em `usuarios.txt` e `ebooks.txt`.
+Começamos com uma classe de repositório por arquivo, mas juntamos tudo em uma só ao ver que as
+cinco eram o mesmo código repetido, mudando apenas os campos de cada linha.
 Por causa disso, o título passou a identificar o eBook também no código, com `equals` e `hashCode`
 em `EBook`. Criei o método `Estante.restaurar` para recolocar na estante os itens já gravados, sem
 passar pela validação do período de acesso, que só vale para uma adição nova feita pelo aluno.

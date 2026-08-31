@@ -160,26 +160,20 @@ package interface_cli <<Rectangle>> {
 }
 
 package persistencia <<Rectangle>> {
-  class CatalogoRepositorioArquivo {
-    +salvar(catalogo: Catalogo): void
-    +carregar(): Catalogo
+  class BibliotecaRepositorioArquivo {
+    -PASTA: String
+    -SEP: String
+    +salvar(catalogo: Catalogo, usuarios: List<Usuario>, estatisticas: SistemaEstatisticas): void
+    +carregar(): Dados
+    -escrever(nome: String, linhas: List<String>): void
+    -ler(nome: String, minimoDeCampos: int): List<String[]>
   }
-  class EBookRepositorioArquivo {
-    +salvar(ebooks: List<EBook>): void
-    +carregar(): List<EBook>
+  class Dados <<record>> {
+    +catalogo: Catalogo
+    +usuarios: List<Usuario>
+    +estatisticas: SistemaEstatisticas
   }
-  class UsuarioRepositorioArquivo {
-    +salvar(usuarios: List<Usuario>): void
-    +carregar(): List<Usuario>
-  }
-  class EstanteRepositorioArquivo {
-    +salvar(alunos: List<Aluno>): void
-    +carregar(alunos: List<Aluno>, catalogo: Catalogo): void
-  }
-  class EstatisticasRepositorioArquivo {
-    +salvar(estatisticas: SistemaEstatisticas): void
-    +carregar(): SistemaEstatisticas
-  }
+  BibliotecaRepositorioArquivo ..> Dados : devolve
 }
 
 ' ===== Relacionamentos =====
@@ -206,7 +200,6 @@ MenuPrincipal ..> Usuario
 MenuPrincipal ..> Catalogo
 MenuPrincipal ..> SistemaEstatisticas
 MenuPrincipal ..> DadosIniciais
-MenuPrincipal ..> persistencia
-CatalogoRepositorioArquivo ..> EBookRepositorioArquivo
+MenuPrincipal ..> BibliotecaRepositorioArquivo
 
 @enduml

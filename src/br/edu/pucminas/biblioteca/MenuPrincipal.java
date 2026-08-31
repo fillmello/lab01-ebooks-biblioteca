@@ -1,40 +1,21 @@
 package br.edu.pucminas.biblioteca;
 
-import br.edu.pucminas.biblioteca.modelo.Aluno;
-import br.edu.pucminas.biblioteca.modelo.Bibliotecario;
-import br.edu.pucminas.biblioteca.modelo.Catalogo;
-import br.edu.pucminas.biblioteca.modelo.Categoria;
-import br.edu.pucminas.biblioteca.modelo.EBook;
-import br.edu.pucminas.biblioteca.modelo.Formato;
-import br.edu.pucminas.biblioteca.modelo.ItemEstante;
-import br.edu.pucminas.biblioteca.modelo.Licenca;
-import br.edu.pucminas.biblioteca.modelo.PeriodoAcesso;
-import br.edu.pucminas.biblioteca.modelo.SistemaEstatisticas;
-import br.edu.pucminas.biblioteca.modelo.TipoLeitura;
-import br.edu.pucminas.biblioteca.modelo.Usuario;
-import br.edu.pucminas.biblioteca.persistencia.CatalogoRepositorioArquivo;
-import br.edu.pucminas.biblioteca.persistencia.EstanteRepositorioArquivo;
-import br.edu.pucminas.biblioteca.persistencia.EstatisticasRepositorioArquivo;
-import br.edu.pucminas.biblioteca.persistencia.UsuarioRepositorioArquivo;
+import br.edu.pucminas.biblioteca.modelo.*;
+import br.edu.pucminas.biblioteca.persistencia.BibliotecaRepositorioArquivo;
 import java.io.IOException;
 import java.time.LocalDate;
 import java.time.format.DateTimeParseException;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-import java.util.Scanner;
+import java.util.*;
 
 /** Interface de linha de comando do sistema de gestao de eBooks. */
 public class MenuPrincipal {
 
-    private static final int OPCAO_INVALIDA = -1;
-    private static final int FIM_DE_ENTRADA = -2;
+    /** Uma linha de menu: o texto mostrado ao usuario e a acao que ela executa. */
+    private record Opcao(String rotulo, Runnable acao) {
+    }
 
     private final Scanner leitor = new Scanner(System.in);
-    private final CatalogoRepositorioArquivo catalogoRepositorio = new CatalogoRepositorioArquivo();
-    private final UsuarioRepositorioArquivo usuarioRepositorio = new UsuarioRepositorioArquivo();
-    private final EstanteRepositorioArquivo estanteRepositorio = new EstanteRepositorioArquivo();
-    private final EstatisticasRepositorioArquivo estatisticasRepositorio = new EstatisticasRepositorioArquivo();
+    private final BibliotecaRepositorioArquivo repositorio = new BibliotecaRepositorioArquivo();
 
     private Catalogo catalogo;
     private List<Usuario> usuarios = new ArrayList<>();
@@ -49,13 +30,9 @@ public class MenuPrincipal {
         carregarDados();
         System.out.println("Semestre " + catalogo.getSemestre() + ", data de hoje: " + LocalDate.now());
 
-        boolean continuar = true;
-        while (continuar) {
-            Usuario usuario = realizarLogin();
-            if (usuario == null) {
-                continuar = false;
-            } else if (usuario instanceof Aluno) {
-                menuAluno((Aluno) usuario);
+        for (Usuario usuario = realizarLogin(); usuario != null; usuario = realizarLogin()) {
+            if (usuario instanceof Aluno aluno) {
+                menuAluno(aluno);
             } else {
                 menuBibliotecario((Bibliotecario) usuario);
             }
@@ -68,31 +45,32 @@ public class MenuPrincipal {
 
     private void carregarDados() {
         try {
-            catalogo = catalogoRepositorio.carregar();
-            usuarios = usuarioRepositorio.carregar();
-            estatisticas = estatisticasRepositorio.carregar();
-            if (catalogo == null || usuarios.isEmpty()) {
-                System.out.println("Primeira execucao: criando os dados iniciais em dados/.");
-                catalogo = DadosIniciais.criarCatalogo();
-                usuarios = DadosIniciais.criarUsuarios();
-                salvarDados();
-            } else {
-                estanteRepositorio.carregar(alunos(), catalogo);
+            BibliotecaRepositorioArquivo.Dados dados = repositorio.carregar();
+            if (dados != null) {
+                catalogo = dados.catalogo();
+                usuarios = dados.usuarios();
+                estatisticas = dados.estatisticas();
+                return;
             }
-        } catch (IOException e) {
+            System.out.println("Primeira execucao: criando os dados iniciais em dados/.");
+            usarDadosIniciais();
+            salvarDados();
+        } catch (RuntimeException | IOException e) {
             System.out.println("Nao foi possivel ler os dados gravados: " + e.getMessage());
-            System.out.println("O sistema vai continuar com os dados iniciais, sem gravar em disco.");
-            catalogo = DadosIniciais.criarCatalogo();
-            usuarios = DadosIniciais.criarUsuarios();
+            System.out.println("O sistema continua com os dados iniciais, sem gravar em disco.");
+            usarDadosIniciais();
         }
+    }
+
+    private void usarDadosIniciais() {
+        catalogo = DadosIniciais.criarCatalogo();
+        usuarios = DadosIniciais.criarUsuarios();
+        estatisticas = new SistemaEstatisticas();
     }
 
     private void salvarDados() {
         try {
-            catalogoRepositorio.salvar(catalogo);
-            usuarioRepositorio.salvar(usuarios);
-            estanteRepositorio.salvar(alunos());
-            estatisticasRepositorio.salvar(estatisticas);
+            repositorio.salvar(catalogo, usuarios, estatisticas);
         } catch (IOException e) {
             System.out.println("Nao foi possivel gravar os dados: " + e.getMessage());
         }
@@ -102,14 +80,11 @@ public class MenuPrincipal {
 
     private Usuario realizarLogin() {
         while (true) {
-            System.out.println();
-            System.out.print("Login (id do usuario, ou 0 para encerrar): ");
-            String id = lerLinha();
+            String id = perguntar("\nLogin (id do usuario, ou 0 para encerrar)");
             if (id == null || "0".equals(id.trim())) {
                 return null;
             }
-            System.out.print("Senha: ");
-            String senha = lerLinha();
+            String senha = perguntar("Senha");
             if (senha == null) {
                 return null;
             }
@@ -122,124 +97,96 @@ public class MenuPrincipal {
         }
     }
 
-    // ===== Menu do aluno (UC02, UC03 e UC04) =====
+    // ===== Menus =====
 
     private void menuAluno(Aluno aluno) {
         List<EBook> acessosAbertos = new ArrayList<>();
-        boolean continuar = true;
-        while (continuar) {
-            System.out.println();
-            System.out.println("--- Menu do aluno: " + aluno.getNome() + " ---");
-            System.out.println("1. Consultar catalogo do semestre");
-            System.out.println("2. Adicionar eBook a estante");
-            System.out.println("3. Remover eBook da estante");
-            System.out.println("4. Consultar minha estante");
-            System.out.println("5. Acessar eBook");
-            System.out.println("6. Encerrar acesso a eBook");
-            System.out.println("7. Sair (voltar ao login)");
+        exibirMenu("Menu do aluno: " + aluno.getNome(), List.of(
+                new Opcao("Consultar catalogo do semestre", this::consultarCatalogo),
+                new Opcao("Adicionar eBook a estante", () -> adicionarEBook(aluno)),
+                new Opcao("Remover eBook da estante", () -> removerEBook(aluno)),
+                new Opcao("Consultar minha estante", () -> consultarEstante(aluno)),
+                new Opcao("Acessar eBook", () -> acessarEBook(aluno, acessosAbertos)),
+                new Opcao("Encerrar acesso a eBook", () -> encerrarAcesso(aluno, acessosAbertos))));
 
-            int opcao = lerOpcao();
-            if (opcao == FIM_DE_ENTRADA) {
-                continuar = false;
-                continue;
+        // Ao sair, as licencas ocupadas pelo aluno na sessao voltam a ficar disponiveis.
+        acessosAbertos.forEach(aluno::encerrarAcessoEBook);
+    }
+
+    private void menuBibliotecario(Bibliotecario bibliotecario) {
+        exibirMenu("Menu do bibliotecario: " + bibliotecario.getNome(), List.of(
+                new Opcao("Cadastrar eBook no catalogo", () -> cadastrarEBook(bibliotecario)),
+                new Opcao("Consultar catalogo do semestre", this::consultarCatalogo),
+                new Opcao("Cadastrar periodo de acesso", this::cadastrarPeriodoAcesso),
+                new Opcao("Consultar alunos com um eBook", () -> consultarAlunosComEBook(bibliotecario)),
+                new Opcao("Consultar estatisticas de uso", this::consultarEstatisticas),
+                new Opcao("Renovar catalogo do semestre", () -> renovarCatalogo(bibliotecario))));
+    }
+
+    /** Mostra as opcoes em laco ate o usuario escolher sair ou a entrada terminar. */
+    private void exibirMenu(String titulo, List<Opcao> opcoes) {
+        int sair = opcoes.size() + 1;
+        while (true) {
+            System.out.println("\n--- " + titulo + " ---");
+            for (int i = 0; i < opcoes.size(); i++) {
+                System.out.println((i + 1) + ". " + opcoes.get(i).rotulo());
             }
-            if (opcao == OPCAO_INVALIDA) {
+            System.out.println(sair + ". Sair (voltar ao login)");
+
+            Integer escolha = lerOpcao();
+            if (escolha == null || escolha == sair) {
+                return;
+            }
+            if (escolha < 1 || escolha > opcoes.size()) {
+                System.out.println("Opcao invalida: digite o numero de uma das opcoes acima.");
                 continue;
             }
             try {
-                switch (opcao) {
-                    case 1:
-                        consultarCatalogo();
-                        break;
-                    case 2:
-                        adicionarEBookNaEstante(aluno);
-                        break;
-                    case 3:
-                        removerEBookDaEstante(aluno);
-                        break;
-                    case 4:
-                        consultarEstante(aluno);
-                        break;
-                    case 5:
-                        acessarEBook(aluno, acessosAbertos);
-                        break;
-                    case 6:
-                        encerrarAcesso(aluno, acessosAbertos);
-                        break;
-                    case 7:
-                        continuar = false;
-                        break;
-                    default:
-                        System.out.println("Opcao invalida, tente novamente.");
-                }
+                opcoes.get(escolha - 1).acao().run();
             } catch (IllegalStateException | IllegalArgumentException e) {
                 System.out.println("Nao foi possivel concluir a acao: " + e.getMessage());
             }
         }
-        liberarAcessosAbertos(aluno, acessosAbertos);
     }
 
+    // ===== Acoes do aluno (UC02, UC03 e UC04) =====
+
     /** UC02 - Adicionar eBook a estante, que inclui UC07 - Registrar estatistica de uso. */
-    private void adicionarEBookNaEstante(Aluno aluno) {
+    private void adicionarEBook(Aluno aluno) {
         LocalDate hoje = LocalDate.now();
-        consultarCatalogo();
-        System.out.print("Titulo do eBook a adicionar: ");
-        String titulo = lerLinha();
-        if (titulo == null) {
-            return;
-        }
-        EBook ebook = catalogo.buscarPorTitulo(titulo);
+        EBook ebook = pedirEBookDoCatalogo("Titulo do eBook a adicionar");
         if (ebook == null) {
-            System.out.println("eBook nao encontrado no catalogo do semestre.");
             return;
         }
         if (!catalogo.podeAdicionar(ebook, hoje)) {
             System.out.println("Fora do periodo de acesso: a estante nao pode ser alterada hoje.");
             return;
         }
-        System.out.println("Tipo de leitura:");
-        System.out.println("1. Obrigatoria, indicada pela disciplina ("
-                + aluno.getEstante().vagasRestantes(TipoLeitura.OBRIGATORIA) + " vaga(s) livre(s))");
-        System.out.println("2. Livre, de escolha do aluno ("
-                + aluno.getEstante().vagasRestantes(TipoLeitura.LIVRE) + " vaga(s) livre(s))");
-        int escolha = lerOpcao();
-        TipoLeitura tipo = tipoDeLeitura(escolha);
+        Estante estante = aluno.getEstante();
+        System.out.println("Vagas livres: " + estante.vagasRestantes(TipoLeitura.OBRIGATORIA)
+                + " obrigatoria(s), " + estante.vagasRestantes(TipoLeitura.LIVRE) + " livre(s).");
+        TipoLeitura tipo = escolher("Tipo de leitura", TipoLeitura.values());
         if (tipo == null) {
             System.out.println("Tipo de leitura invalido.");
-            return;
-        }
-        PeriodoAcesso periodo = catalogo.periodoAbertoEm(hoje);
-        if (aluno.adicionarEBook(ebook, tipo, periodo, hoje, estatisticas)) {
-            System.out.println("eBook adicionado a estante. Estatistica de uso registrada: "
+        } else if (aluno.adicionarEBook(ebook, tipo, catalogo.periodoAbertoEm(hoje), hoje, estatisticas)) {
+            System.out.println("eBook adicionado. Estatistica de uso registrada: "
                     + estatisticas.consultarTotalAdicoes(ebook) + " adicao(oes) no total.");
             salvarDados();
         } else {
-            System.out.println("Nao foi possivel adicionar: o eBook ja esta na estante ou o limite"
-                    + " de leitura " + tipo.toString().toLowerCase() + " foi atingido.");
+            System.out.println("Nao foi possivel adicionar: o eBook ja esta na estante ou o limite de "
+                    + "leitura " + minuscula(tipo) + " foi atingido.");
         }
     }
 
     /** UC03 - Remover eBook da estante. */
-    private void removerEBookDaEstante(Aluno aluno) {
+    private void removerEBook(Aluno aluno) {
         LocalDate hoje = LocalDate.now();
-        if (aluno.getEstante().listar().isEmpty()) {
-            System.out.println("Sua estante esta vazia.");
-            return;
-        }
-        consultarEstante(aluno);
-        System.out.print("Titulo do eBook a remover: ");
-        String titulo = lerLinha();
-        if (titulo == null) {
-            return;
-        }
-        EBook ebook = buscarNaEstante(aluno, titulo);
+        EBook ebook = pedirEBookDaEstante(aluno, "Titulo do eBook a remover");
         if (ebook == null) {
-            System.out.println("Esse eBook nao esta na sua estante.");
             return;
         }
-        PeriodoAcesso periodo = catalogo.periodoAbertoEm(hoje);
-        if (aluno.removerEBook(ebook, periodo, hoje)) {
-            System.out.println("eBook removido da estante. A vaga do tipo correspondente esta livre.");
+        if (aluno.removerEBook(ebook, catalogo.periodoAbertoEm(hoje), hoje)) {
+            System.out.println("eBook removido. A vaga do tipo correspondente esta livre.");
             salvarDados();
         } else {
             System.out.println("Fora do periodo de acesso: a estante nao pode ser alterada hoje.");
@@ -247,20 +194,18 @@ public class MenuPrincipal {
     }
 
     private void consultarEstante(Aluno aluno) {
-        List<ItemEstante> itens = aluno.getEstante().listar();
-        System.out.println();
-        System.out.println("Estante de " + aluno.getNome() + ", matricula " + aluno.getMatricula() + ":");
-        if (itens.isEmpty()) {
+        Estante estante = aluno.getEstante();
+        System.out.println("\nEstante de " + aluno.getNome() + ", matricula " + aluno.getMatricula() + ":");
+        if (estante.listar().isEmpty()) {
             System.out.println("  (estante vazia)");
             return;
         }
-        for (ItemEstante item : itens) {
-            System.out.println("  - " + item.getEBook().getTitulo()
-                    + " | leitura " + item.getTipo().toString().toLowerCase()
+        for (ItemEstante item : estante.listar()) {
+            System.out.println("  - " + item.getEBook().getTitulo() + " | leitura " + minuscula(item.getTipo())
                     + " | adicionado em " + item.getDataAdicao());
         }
-        System.out.println("  Obrigatorios: " + aluno.getEstante().contarPorTipo(TipoLeitura.OBRIGATORIA)
-                + "/4, livres: " + aluno.getEstante().contarPorTipo(TipoLeitura.LIVRE) + "/2");
+        System.out.println("  Obrigatorios: " + estante.contarPorTipo(TipoLeitura.OBRIGATORIA)
+                + "/4, livres: " + estante.contarPorTipo(TipoLeitura.LIVRE) + "/2");
     }
 
     /**
@@ -269,28 +214,15 @@ public class MenuPrincipal {
      * uma ao abrir o eBook em dispositivos diferentes.
      */
     private void acessarEBook(Aluno aluno, List<EBook> acessosAbertos) {
-        if (aluno.getEstante().listar().isEmpty()) {
-            System.out.println("Sua estante esta vazia.");
-            return;
-        }
-        consultarEstante(aluno);
-        System.out.print("Titulo do eBook a acessar: ");
-        String titulo = lerLinha();
-        if (titulo == null) {
-            return;
-        }
-        EBook ebook = buscarNaEstante(aluno, titulo);
+        EBook ebook = pedirEBookDaEstante(aluno, "Titulo do eBook a acessar");
         if (ebook == null) {
-            System.out.println("Esse eBook nao esta na sua estante.");
             return;
         }
-        Licenca licenca = ebook.getLicenca();
         if (aluno.acessarEBook(ebook)) {
             acessosAbertos.add(ebook);
-            System.out.println("Acesso concedido. Licencas em uso: " + licenca.getAcessosAtivos()
-                    + "/" + licenca.getLimiteAcessosSimultaneos() + ".");
+            System.out.println("Acesso concedido. Licencas em uso: " + situacaoLicenca(ebook) + ".");
         } else {
-            System.out.println("Acesso bloqueado: as " + licenca.getLimiteAcessosSimultaneos()
+            System.out.println("Acesso bloqueado: as " + ebook.getLicenca().getLimiteAcessosSimultaneos()
                     + " licenca(s) simultanea(s) desse eBook estao em uso.");
         }
     }
@@ -301,130 +233,55 @@ public class MenuPrincipal {
             return;
         }
         System.out.println("Acessos abertos:");
-        for (EBook aberto : acessosAbertos) {
-            System.out.println("  - " + aberto.getTitulo());
-        }
-        System.out.print("Titulo do eBook a encerrar: ");
-        String titulo = lerLinha();
+        acessosAbertos.forEach(aberto -> System.out.println("  - " + aberto.getTitulo()));
+
+        String titulo = perguntar("Titulo do eBook a encerrar");
         if (titulo == null) {
             return;
         }
         EBook ebook = buscarNaEstante(aluno, titulo);
-        if (ebook == null || !acessosAbertos.contains(ebook)) {
+        if (ebook == null || !acessosAbertos.remove(ebook)) {
             System.out.println("Voce nao tem acesso aberto a esse eBook.");
             return;
         }
-        if (aluno.encerrarAcessoEBook(ebook)) {
-            acessosAbertos.remove(ebook);
-            System.out.println("Acesso encerrado. Licencas em uso: "
-                    + ebook.getLicenca().getAcessosAtivos()
-                    + "/" + ebook.getLicenca().getLimiteAcessosSimultaneos() + ".");
-        }
+        aluno.encerrarAcessoEBook(ebook);
+        System.out.println("Acesso encerrado. Licencas em uso: " + situacaoLicenca(ebook) + ".");
     }
 
-    /** Ao sair, as licencas ocupadas pelo aluno na sessao voltam a ficar disponiveis. */
-    private void liberarAcessosAbertos(Aluno aluno, List<EBook> acessosAbertos) {
-        for (EBook ebook : acessosAbertos) {
-            aluno.encerrarAcessoEBook(ebook);
-        }
-        acessosAbertos.clear();
-    }
-
-    // ===== Menu do bibliotecario (UC05, UC06, UC07 e UC08) =====
-
-    private void menuBibliotecario(Bibliotecario bibliotecario) {
-        boolean continuar = true;
-        while (continuar) {
-            System.out.println();
-            System.out.println("--- Menu do bibliotecario: " + bibliotecario.getNome() + " ---");
-            System.out.println("1. Cadastrar eBook no catalogo");
-            System.out.println("2. Consultar catalogo do semestre");
-            System.out.println("3. Cadastrar periodo de acesso");
-            System.out.println("4. Consultar alunos com um eBook");
-            System.out.println("5. Consultar estatisticas de uso");
-            System.out.println("6. Renovar catalogo do semestre");
-            System.out.println("7. Sair (voltar ao login)");
-
-            int opcao = lerOpcao();
-            if (opcao == FIM_DE_ENTRADA) {
-                continuar = false;
-                continue;
-            }
-            if (opcao == OPCAO_INVALIDA) {
-                continue;
-            }
-            try {
-                switch (opcao) {
-                    case 1:
-                        cadastrarEBook(bibliotecario);
-                        break;
-                    case 2:
-                        consultarCatalogo();
-                        break;
-                    case 3:
-                        cadastrarPeriodoAcesso();
-                        break;
-                    case 4:
-                        consultarAlunosComEBook(bibliotecario);
-                        break;
-                    case 5:
-                        consultarEstatisticas();
-                        break;
-                    case 6:
-                        renovarCatalogo(bibliotecario);
-                        break;
-                    case 7:
-                        continuar = false;
-                        break;
-                    default:
-                        System.out.println("Opcao invalida, tente novamente.");
-                }
-            } catch (IllegalStateException | IllegalArgumentException e) {
-                System.out.println("Nao foi possivel concluir a acao: " + e.getMessage());
-            }
-        }
-    }
+    // ===== Acoes do bibliotecario (UC05, UC06, UC07 e UC08) =====
 
     /** UC05 - Cadastrar eBook. */
     private void cadastrarEBook(Bibliotecario bibliotecario) {
-        System.out.print("Titulo: ");
-        String titulo = lerLinha();
-        System.out.print("Editora: ");
-        String editora = lerLinha();
+        String titulo = perguntar("Titulo");
+        String editora = perguntar("Editora");
         if (titulo == null || editora == null) {
             return;
         }
-        System.out.println("Formato: 1. PDF  2. EPUB");
-        Formato formato = formatoDe(lerOpcao());
-        System.out.println("Categoria: 1. Literatura  2. Tecnico  3. Periodico");
-        Categoria categoria = categoriaDe(lerOpcao());
-        System.out.print("Limite de acessos simultaneos (enter para "
-                + Licenca.LIMITE_MAXIMO_SIMULTANEOS + "): ");
-        String limite = lerLinha();
+        Formato formato = escolher("Formato", Formato.values());
+        Categoria categoria = escolher("Categoria", Categoria.values());
+        String limite = perguntar("Limite de acessos simultaneos (enter para "
+                + Licenca.LIMITE_MAXIMO_SIMULTANEOS + ")");
         if (limite == null) {
             return;
         }
-        Licenca licenca = limite.trim().isEmpty()
-                ? new Licenca()
+        Licenca licenca = limite.trim().isEmpty() ? new Licenca()
                 : new Licenca(Integer.parseInt(limite.trim()));
 
-        bibliotecario.cadastrarEBook(new EBook(titulo.trim(), editora.trim(), formato, categoria, licenca),
-                catalogo);
+        bibliotecario.cadastrarEBook(
+                new EBook(titulo.trim(), editora.trim(), formato, categoria, licenca), catalogo);
         System.out.println("eBook cadastrado no catalogo do semestre " + catalogo.getSemestre() + ".");
         salvarDados();
     }
 
     private void cadastrarPeriodoAcesso() {
-        System.out.print("Data de inicio (aaaa-mm-dd): ");
-        String inicio = lerLinha();
-        System.out.print("Data de fim (aaaa-mm-dd): ");
-        String fim = lerLinha();
+        String inicio = perguntar("Data de inicio (aaaa-mm-dd)");
+        String fim = perguntar("Data de fim (aaaa-mm-dd)");
         if (inicio == null || fim == null) {
             return;
         }
         try {
-            catalogo.adicionarPeriodo(new PeriodoAcesso(
-                    LocalDate.parse(inicio.trim()), LocalDate.parse(fim.trim())));
+            catalogo.adicionarPeriodo(
+                    new PeriodoAcesso(LocalDate.parse(inicio.trim()), LocalDate.parse(fim.trim())));
         } catch (DateTimeParseException e) {
             System.out.println("Data invalida. Use o formato aaaa-mm-dd, por exemplo 2026-08-01.");
             return;
@@ -435,15 +292,8 @@ public class MenuPrincipal {
 
     /** UC06 - Consultar alunos com um eBook. */
     private void consultarAlunosComEBook(Bibliotecario bibliotecario) {
-        consultarCatalogo();
-        System.out.print("Titulo do eBook a consultar: ");
-        String titulo = lerLinha();
-        if (titulo == null) {
-            return;
-        }
-        EBook ebook = catalogo.buscarPorTitulo(titulo);
+        EBook ebook = pedirEBookDoCatalogo("Titulo do eBook a consultar");
         if (ebook == null) {
-            System.out.println("eBook nao encontrado no catalogo do semestre.");
             return;
         }
         List<Aluno> encontrados = bibliotecario.consultarAlunosComEBook(ebook, alunos());
@@ -452,34 +302,26 @@ public class MenuPrincipal {
             return;
         }
         System.out.println("Alunos com \"" + ebook.getTitulo() + "\" na estante:");
-        for (Aluno aluno : encontrados) {
-            System.out.println("  - " + aluno.getNome() + ", matricula " + aluno.getMatricula());
-        }
+        encontrados.forEach(a -> System.out.println("  - " + a.getNome() + ", matricula " + a.getMatricula()));
     }
 
     /** UC07 - Consulta das estatisticas de uso acumuladas. */
     private void consultarEstatisticas() {
         Map<String, Integer> adicoes = estatisticas.listarAdicoes();
-        System.out.println();
-        System.out.println("Estatisticas de uso, adicoes a estantes por titulo:");
+        System.out.println("\nEstatisticas de uso, adicoes a estantes por titulo:");
         if (adicoes.isEmpty()) {
             System.out.println("  (nenhuma adicao registrada ate agora)");
             return;
         }
-        for (Map.Entry<String, Integer> adicao : adicoes.entrySet()) {
-            System.out.println("  - " + adicao.getKey() + ": " + adicao.getValue() + " adicao(oes)");
-        }
+        adicoes.forEach((titulo, total) -> System.out.println("  - " + titulo + ": " + total + " adicao(oes)"));
     }
 
     /** UC08 - Renovar catalogo do semestre. */
     private void renovarCatalogo(Bibliotecario bibliotecario) {
-        LocalDate hoje = LocalDate.now();
-        if (!catalogo.periodoDeAcessoEncerrado(hoje)) {
+        if (!catalogo.periodoDeAcessoEncerrado(LocalDate.now())) {
             System.out.println("Atencao: o periodo de acesso ainda nao terminou.");
             System.out.println("A renovacao vai considerar as estantes como estao hoje.");
-            System.out.print("Confirmar mesmo assim? (s/n): ");
-            String resposta = lerLinha();
-            if (resposta == null || !"s".equalsIgnoreCase(resposta.trim())) {
+            if (!confirmar("Confirmar mesmo assim? (s/n)")) {
                 System.out.println("Renovacao cancelada.");
                 return;
             }
@@ -488,21 +330,17 @@ public class MenuPrincipal {
         List<EBook> anteriores = new ArrayList<>(catalogo.listarEBooks());
         Catalogo renovado = bibliotecario.renovarCatalogo(catalogo, alunos);
 
-        System.out.println();
-        System.out.println("Minimo para renovar a licenca: " + Catalogo.getMinimoAlunosRenovacao()
+        System.out.println("\nMinimo para renovar a licenca: " + Catalogo.getMinimoAlunosRenovacao()
                 + " aluno(s) com o titulo na estante.");
         for (EBook ebook : anteriores) {
-            int total = catalogo.contarAlunosCom(ebook, alunos);
-            String situacao = renovado.listarEBooks().contains(ebook)
-                    ? "licenca renovada"
-                    : "licenca nao renovada, titulo removido do catalogo";
-            System.out.println("  - " + ebook.getTitulo() + ": " + total + " aluno(s) -> " + situacao);
+            System.out.println("  - " + ebook.getTitulo() + ": " + catalogo.contarAlunosCom(ebook, alunos)
+                    + " aluno(s) -> " + (renovado.listarEBooks().contains(ebook) ? "licenca renovada"
+                            : "licenca nao renovada, titulo removido do catalogo"));
         }
+
         catalogo = renovado;
-        int descartados = 0;
-        for (Aluno aluno : alunos) {
-            descartados += aluno.getEstante().descartarNaoLicenciados(catalogo.listarEBooks());
-        }
+        int descartados = alunos.stream()
+                .mapToInt(a -> a.getEstante().descartarNaoLicenciados(catalogo.listarEBooks())).sum();
         salvarDados();
         if (descartados > 0) {
             System.out.println("Itens retirados das estantes por perda de licenca: " + descartados + ".");
@@ -512,100 +350,103 @@ public class MenuPrincipal {
         System.out.println("Cadastre o periodo de acesso do novo semestre para liberar as estantes.");
     }
 
-    // ===== Apoio =====
-
     private void consultarCatalogo() {
-        System.out.println();
-        System.out.println("Catalogo do semestre " + catalogo.getSemestre() + ":");
+        System.out.println("\nCatalogo do semestre " + catalogo.getSemestre() + ":");
         if (catalogo.listarEBooks().isEmpty()) {
             System.out.println("  (nenhum eBook licenciado)");
             return;
         }
         for (EBook ebook : catalogo.listarEBooks()) {
-            System.out.println("  - " + ebook + ", licencas em uso: "
-                    + ebook.getLicenca().getAcessosAtivos()
-                    + "/" + ebook.getLicenca().getLimiteAcessosSimultaneos());
+            System.out.println("  - " + ebook + ", licencas em uso: " + situacaoLicenca(ebook));
         }
         PeriodoAcesso periodo = catalogo.periodoAbertoEm(LocalDate.now());
-        System.out.println(periodo == null
-                ? "  Periodo de acesso fechado hoje."
+        System.out.println(periodo == null ? "  Periodo de acesso fechado hoje."
                 : "  Periodo de acesso aberto ate " + periodo.getDataFim() + ".");
     }
 
-    private List<Aluno> alunos() {
-        List<Aluno> lista = new ArrayList<>();
-        for (Usuario usuario : usuarios) {
-            if (usuario instanceof Aluno) {
-                lista.add((Aluno) usuario);
-            }
+    // ===== Apoio: perguntas ao usuario e buscas =====
+
+    /** Mostra o catalogo, pergunta um titulo e devolve o eBook, ou null se nao existir. */
+    private EBook pedirEBookDoCatalogo(String pergunta) {
+        consultarCatalogo();
+        String titulo = perguntar(pergunta);
+        EBook ebook = titulo == null ? null : catalogo.buscarPorTitulo(titulo);
+        if (ebook == null && titulo != null) {
+            System.out.println("eBook nao encontrado no catalogo do semestre.");
         }
-        return lista;
+        return ebook;
     }
 
-    private Usuario buscarUsuario(String id) {
-        for (Usuario usuario : usuarios) {
-            if (usuario.getId().equalsIgnoreCase(id)) {
-                return usuario;
-            }
+    /** Mostra a estante, pergunta um titulo e devolve o eBook, ou null se nao estiver la. */
+    private EBook pedirEBookDaEstante(Aluno aluno, String pergunta) {
+        if (aluno.getEstante().listar().isEmpty()) {
+            System.out.println("Sua estante esta vazia.");
+            return null;
         }
-        return null;
+        consultarEstante(aluno);
+        String titulo = perguntar(pergunta);
+        EBook ebook = titulo == null ? null : buscarNaEstante(aluno, titulo);
+        if (ebook == null && titulo != null) {
+            System.out.println("Esse eBook nao esta na sua estante.");
+        }
+        return ebook;
     }
 
     private EBook buscarNaEstante(Aluno aluno, String titulo) {
-        for (ItemEstante item : aluno.getEstante().listar()) {
-            if (item.getEBook().getTitulo().equalsIgnoreCase(titulo.trim())) {
-                return item.getEBook();
-            }
-        }
-        return null;
+        return aluno.getEstante().listar().stream().map(ItemEstante::getEBook)
+                .filter(ebook -> ebook.getTitulo().equalsIgnoreCase(titulo.trim()))
+                .findFirst().orElse(null);
     }
 
-    private TipoLeitura tipoDeLeitura(int opcao) {
-        if (opcao == 1) {
-            return TipoLeitura.OBRIGATORIA;
-        }
-        return opcao == 2 ? TipoLeitura.LIVRE : null;
+    private Usuario buscarUsuario(String id) {
+        return usuarios.stream().filter(u -> u.getId().equalsIgnoreCase(id)).findFirst().orElse(null);
     }
 
-    private Formato formatoDe(int opcao) {
-        if (opcao == 1) {
-            return Formato.PDF;
-        }
-        return opcao == 2 ? Formato.EPUB : null;
+    private List<Aluno> alunos() {
+        return usuarios.stream().filter(Aluno.class::isInstance).map(Aluno.class::cast).toList();
     }
 
-    private Categoria categoriaDe(int opcao) {
-        switch (opcao) {
-            case 1:
-                return Categoria.LITERATURA;
-            case 2:
-                return Categoria.TECNICO;
-            case 3:
-                return Categoria.PERIODICO;
-            default:
-                return null;
-        }
+    private String situacaoLicenca(EBook ebook) {
+        return ebook.getLicenca().getAcessosAtivos() + "/" + ebook.getLicenca().getLimiteAcessosSimultaneos();
     }
 
-    private int lerOpcao() {
-        System.out.print("Escolha uma opcao: ");
-        String entrada = lerLinha();
+    private String minuscula(Enum<?> valor) {
+        return valor.toString().toLowerCase();
+    }
+
+    /** Lista os valores de um enum numerados e devolve o escolhido, ou null se invalido. */
+    private <T extends Enum<T>> T escolher(String rotulo, T[] valores) {
+        System.out.println(rotulo + ":");
+        for (int i = 0; i < valores.length; i++) {
+            System.out.println((i + 1) + ". " + valores[i]);
+        }
+        Integer escolha = lerOpcao();
+        return escolha != null && escolha >= 1 && escolha <= valores.length ? valores[escolha - 1] : null;
+    }
+
+    private boolean confirmar(String pergunta) {
+        String resposta = perguntar(pergunta);
+        return resposta != null && "s".equalsIgnoreCase(resposta.trim());
+    }
+
+    /**
+     * Le um numero de opcao. Devolve null quando a entrada termina e zero quando o
+     * usuario digita algo que nao e numero, caso que quem chamou trata como invalido.
+     */
+    private Integer lerOpcao() {
+        String entrada = perguntar("Escolha uma opcao");
         if (entrada == null) {
-            return FIM_DE_ENTRADA;
+            return null;
         }
         try {
             return Integer.parseInt(entrada.trim());
         } catch (NumberFormatException e) {
-            System.out.println("Digite um numero valido.");
-            return OPCAO_INVALIDA;
+            return 0;
         }
     }
 
-    /** Le uma linha do teclado, devolvendo null quando a entrada termina. */
-    private String lerLinha() {
-        if (!leitor.hasNextLine()) {
-            return null;
-        }
-        return leitor.nextLine();
+    private String perguntar(String pergunta) {
+        System.out.print(pergunta + ": ");
+        return leitor.hasNextLine() ? leitor.nextLine() : null;
     }
 }

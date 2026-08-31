@@ -42,7 +42,7 @@ Protótipo executável de ponta a ponta: interface de linha de comando, regras d
 e persistência em arquivo texto.
 
 - Interface: [MenuPrincipal.java](src/br/edu/pucminas/biblioteca/MenuPrincipal.java)
-- Persistência: [src/br/edu/pucminas/biblioteca/persistencia/](src/br/edu/pucminas/biblioteca/persistencia/)
+- Persistência: [BibliotecaRepositorioArquivo.java](src/br/edu/pucminas/biblioteca/persistencia/BibliotecaRepositorioArquivo.java)
 - Comparação entre o que foi modelado e o que foi implementado: [docs/comparacao-modelo-implementacao.md](docs/comparacao-modelo-implementacao.md)
 
 ### Como compilar e executar
@@ -113,14 +113,33 @@ Mantida a mesma divisão das sprints anteriores:
 
 | Integrante | Funcionalidades | Classes implementadas |
 | --- | --- | --- |
-| Filipe Melo | 01 Realizar login, 02 Adicionar eBook à estante, 03 Remover eBook da estante, 04 Acessar eBook | Usuario, Aluno, Estante, Licenca, EstanteRepositorioArquivo, UsuarioRepositorioArquivo, login e menu do aluno em MenuPrincipal |
-| João Victor | 05 Cadastrar eBook, 06 Consultar alunos com um eBook, 07 Registrar estatística de uso, 08 Renovar catálogo do semestre | Bibliotecario, EBook, Catalogo, PeriodoAcesso, SistemaEstatisticas, CatalogoRepositorioArquivo, EBookRepositorioArquivo, EstatisticasRepositorioArquivo, menu do bibliotecário em MenuPrincipal |
+| Filipe Melo | 01 Realizar login, 02 Adicionar eBook à estante, 03 Remover eBook da estante, 04 Acessar eBook | Usuario, Aluno, Estante, Licenca, login e menu do aluno em MenuPrincipal, parte de estantes e usuários em BibliotecaRepositorioArquivo |
+| João Victor | 05 Cadastrar eBook, 06 Consultar alunos com um eBook, 07 Registrar estatística de uso, 08 Renovar catálogo do semestre | Bibliotecario, EBook, Catalogo, PeriodoAcesso, SistemaEstatisticas, menu do bibliotecário em MenuPrincipal, parte de catálogo e estatísticas em BibliotecaRepositorioArquivo |
 
 O registro semanal de cada integrante fica em [docs/contribuicoes/](docs/contribuicoes/), um arquivo
 por sprint.
 
 ## Nota de transparência sobre uso de IA
 
-Este projeto utilizou a ferramenta Claude, da empresa Anthropic, como apoio na documentação e na
-revisão dos diagramas. O conteúdo foi revisado pelos integrantes antes do commit, e o registro por
-integrante e por semana está em [docs/contribuicoes/](docs/contribuicoes/).
+Este projeto utilizou a ferramenta Claude, da empresa Anthropic, em conformidade com a política de
+uso responsável de IA da disciplina. O uso foi diferente em cada sprint:
+
+| Sprint | Como a ferramenta foi usada |
+| --- | --- |
+| 1 e 2 | Revisão de texto, da consistência entre os diagramas e as histórias, e dos nomes de métodos |
+| 3 | Além da revisão, geração de código nos pontos descritos abaixo |
+
+Na Sprint 3, os trechos abaixo foram **gerados com apoio do Claude**, e não escritos do zero pelos
+integrantes:
+
+- [DadosIniciais.java](src/br/edu/pucminas/biblioteca/DadosIniciais.java) — a classe inteira. São os
+  dados de exemplo criados na primeira execução (usuários e catálogo de demonstração). Não há regra
+  de negócio aqui: é carga de teste, para o protótipo abrir já com conteúdo para demonstrar.
+- [MenuPrincipal.java](src/br/edu/pucminas/biblioteca/MenuPrincipal.java) — a ferramenta ajudou na
+  estrutura da interface de linha de comando: o laço de menu, a leitura e validação da entrada do
+  usuário e o tratamento das exceções. As regras de negócio chamadas por esse menu estão nas classes
+  do pacote `modelo` e foram decididas pelos integrantes.
+
+O restante do código e todas as decisões de modelagem são dos integrantes, que revisaram cada
+trecho antes do commit. O registro por integrante e por semana está em
+[docs/contribuicoes/](docs/contribuicoes/).
