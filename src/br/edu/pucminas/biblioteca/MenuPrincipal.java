@@ -29,13 +29,16 @@ public class MenuPrincipal {
         System.out.println("=== Sistema de Gestao de eBooks da Biblioteca Universitaria ===");
         carregarDados();
         System.out.println("Semestre " + catalogo.getSemestre() + ", data de hoje: " + LocalDate.now());
-
-        for (Usuario usuario = realizarLogin(); usuario != null; usuario = realizarLogin()) {
-            if (usuario instanceof Aluno aluno) {
-                menuAluno(aluno);
-            } else {
-                menuBibliotecario((Bibliotecario) usuario);
+        try {
+            for (Usuario usuario = realizarLogin(); usuario != null; usuario = realizarLogin()) {
+                if (usuario instanceof Aluno aluno) {
+                    menuAluno(aluno);
+                } else {
+                    menuBibliotecario((Bibliotecario) usuario);
+                }
             }
+        } catch (NoSuchElementException e) {
+            // A entrada acabou, o que acontece quando o programa e alimentado por um arquivo.
         }
         System.out.println("Sistema encerrado.");
         leitor.close();
@@ -71,11 +74,11 @@ public class MenuPrincipal {
 
     private Usuario realizarLogin() {
         while (true) {
-            String id = perguntar("\nLogin (id do usuario, 'novo' para criar um login, ou 0 para encerrar)");
-            if (id == null || "0".equals(id.trim())) {
+            String id = perguntar("\nLogin (id, 'novo' para criar um login, ou 0 para encerrar)").trim();
+            if ("0".equals(id)) {
                 return null;
             }
-            if ("novo".equalsIgnoreCase(id.trim())) {
+            if ("novo".equalsIgnoreCase(id)) {
                 Aluno criado = criarLogin();
                 if (criado != null) {
                     return criado;
@@ -83,10 +86,7 @@ public class MenuPrincipal {
                 continue;
             }
             String senha = perguntar("Senha");
-            if (senha == null) {
-                return null;
-            }
-            Usuario usuario = buscarUsuario(id.trim());
+            Usuario usuario = buscarUsuario(id);
             if (usuario != null && usuario.autenticar(senha)) {
                 System.out.println("Acesso liberado. Bem-vindo(a), " + usuario.getNome() + ".");
                 return usuario;
@@ -97,41 +97,31 @@ public class MenuPrincipal {
 
     /**
      * Cria um login de aluno para quem ainda nao tem cadastro e ja o deixa logado.
-     * Devolve null quando os dados informados nao servem, voltando para a tela de login.
-     * Login de bibliotecario nao entra aqui: pelo enunciado, quem mantem os dados dos
-     * bibliotecarios e a propria equipe da biblioteca.
+     * So cria aluno: pelo enunciado, quem mantem os dados dos bibliotecarios e a
+     * propria equipe da biblioteca.
      */
     private Aluno criarLogin() {
-        String id = perguntar("Escolha um id de login");
-        String nome = perguntar("Nome completo");
-        String matricula = perguntar("Matricula");
+        String id = perguntar("Escolha um id de login").trim();
+        String nome = perguntar("Nome completo").trim();
+        String matricula = perguntar("Matricula").trim();
         String senha = perguntar("Senha");
-        if (id == null || nome == null || matricula == null || senha == null) {
-            return null;
-        }
-        id = id.trim();
-        nome = nome.trim();
-        matricula = matricula.trim();
+
         if (id.isEmpty() || nome.isEmpty() || matricula.isEmpty() || senha.isEmpty()) {
-            System.out.println("Id, nome, matricula e senha sao obrigatorios.");
-            return null;
+            return recusar("Id, nome, matricula e senha sao obrigatorios.");
         }
         if (temSeparador(id, nome, matricula, senha)) {
             return null;
         }
         if (buscarUsuario(id) != null) {
-            System.out.println("Ja existe um usuario com o id \"" + id + "\". Escolha outro.");
-            return null;
+            return recusar("Ja existe um usuario com o id \"" + id + "\". Escolha outro.");
         }
-        String finalMatricula = matricula;
-        if (alunos().stream().anyMatch(a -> a.getMatricula().equals(finalMatricula))) {
-            System.out.println("Ja existe um aluno com a matricula " + matricula + ".");
-            return null;
+        if (alunos().stream().anyMatch(a -> a.getMatricula().equals(matricula))) {
+            return recusar("Ja existe um aluno com a matricula " + matricula + ".");
         }
         Aluno aluno = new Aluno(id, nome, senha, matricula);
         usuarios.add(aluno);
         salvarDados();
-        System.out.println("Login criado. Bem-vindo(a), " + aluno.getNome() + ".");
+        System.out.println("Login criado. Bem-vindo(a), " + nome + ".");
         return aluno;
     }
 
@@ -161,7 +151,7 @@ public class MenuPrincipal {
                 new Opcao("Renovar catalogo do semestre", () -> renovarCatalogo(bibliotecario))));
     }
 
-    /** Mostra as opcoes em laco ate o usuario escolher sair ou a entrada terminar. */
+    /** Mostra as opcoes em laco ate o usuario escolher sair. */
     private void exibirMenu(String titulo, List<Opcao> opcoes) {
         int sair = opcoes.size() + 1;
         while (true) {
@@ -171,8 +161,8 @@ public class MenuPrincipal {
             }
             System.out.println(sair + ". Sair (voltar ao login)");
 
-            Integer escolha = lerOpcao();
-            if (escolha == null || escolha == sair) {
+            int escolha = lerOpcao();
+            if (escolha == sair) {
                 return;
             }
             if (escolha < 1 || escolha > opcoes.size()) {
@@ -181,7 +171,7 @@ public class MenuPrincipal {
             }
             try {
                 opcoes.get(escolha - 1).acao().run();
-            } catch (IllegalStateException | IllegalArgumentException e) {
+            } catch (IllegalArgumentException | IllegalStateException e) {
                 System.out.println("Nao foi possivel concluir a acao: " + e.getMessage());
             }
         }
@@ -273,11 +263,7 @@ public class MenuPrincipal {
         System.out.println("Acessos abertos:");
         acessosAbertos.forEach(aberto -> System.out.println("  - " + aberto.getTitulo()));
 
-        String titulo = perguntar("Titulo do eBook a encerrar");
-        if (titulo == null) {
-            return;
-        }
-        EBook ebook = buscarNaEstante(aluno, titulo);
+        EBook ebook = buscarNaEstante(aluno, perguntar("Titulo do eBook a encerrar"));
         if (ebook == null || !acessosAbertos.remove(ebook)) {
             System.out.println("Voce nao tem acesso aberto a esse eBook.");
             return;
@@ -290,36 +276,27 @@ public class MenuPrincipal {
 
     /** UC05 - Cadastrar eBook. */
     private void cadastrarEBook(Bibliotecario bibliotecario) {
-        String titulo = perguntar("Titulo");
-        String editora = perguntar("Editora");
-        if (titulo == null || editora == null || temSeparador(titulo, editora)) {
+        String titulo = perguntar("Titulo").trim();
+        String editora = perguntar("Editora").trim();
+        if (temSeparador(titulo, editora)) {
             return;
         }
         Formato formato = escolher("Formato", Formato.values());
         Categoria categoria = escolher("Categoria", Categoria.values());
         String limite = perguntar("Limite de acessos simultaneos (enter para "
-                + Licenca.LIMITE_MAXIMO_SIMULTANEOS + ")");
-        if (limite == null) {
-            return;
-        }
-        Licenca licenca = limite.trim().isEmpty() ? new Licenca()
-                : new Licenca(Integer.parseInt(limite.trim()));
+                + Licenca.LIMITE_MAXIMO_SIMULTANEOS + ")").trim();
+        Licenca licenca = limite.isEmpty() ? new Licenca() : new Licenca(Integer.parseInt(limite));
 
-        bibliotecario.cadastrarEBook(
-                new EBook(titulo.trim(), editora.trim(), formato, categoria, licenca), catalogo);
+        bibliotecario.cadastrarEBook(new EBook(titulo, editora, formato, categoria, licenca), catalogo);
         System.out.println("eBook cadastrado no catalogo do semestre " + catalogo.getSemestre() + ".");
         salvarDados();
     }
 
     private void cadastrarPeriodoAcesso() {
-        String inicio = perguntar("Data de inicio (aaaa-mm-dd)");
-        String fim = perguntar("Data de fim (aaaa-mm-dd)");
-        if (inicio == null || fim == null) {
-            return;
-        }
         try {
-            catalogo.adicionarPeriodo(
-                    new PeriodoAcesso(LocalDate.parse(inicio.trim()), LocalDate.parse(fim.trim())));
+            catalogo.adicionarPeriodo(new PeriodoAcesso(
+                    LocalDate.parse(perguntar("Data de inicio (aaaa-mm-dd)").trim()),
+                    LocalDate.parse(perguntar("Data de fim (aaaa-mm-dd)").trim())));
         } catch (DateTimeParseException e) {
             System.out.println("Data invalida. Use o formato aaaa-mm-dd, por exemplo 2026-08-01.");
             return;
@@ -359,7 +336,7 @@ public class MenuPrincipal {
         if (!catalogo.periodoDeAcessoEncerrado(LocalDate.now())) {
             System.out.println("Atencao: o periodo de acesso ainda nao terminou.");
             System.out.println("A renovacao vai considerar as estantes como estao hoje.");
-            if (!confirmar("Confirmar mesmo assim? (s/n)")) {
+            if (!"s".equalsIgnoreCase(perguntar("Confirmar mesmo assim? (s/n)").trim())) {
                 System.out.println("Renovacao cancelada.");
                 return;
             }
@@ -380,11 +357,9 @@ public class MenuPrincipal {
         int descartados = alunos.stream()
                 .mapToInt(a -> a.getEstante().descartarNaoLicenciados(catalogo.listarEBooks())).sum();
         salvarDados();
-        if (descartados > 0) {
-            System.out.println("Itens retirados das estantes por perda de licenca: " + descartados + ".");
-        }
         System.out.println("Catalogo do semestre " + catalogo.getSemestre() + " gerado com "
-                + catalogo.listarEBooks().size() + " titulo(s).");
+                + catalogo.listarEBooks().size() + " titulo(s). Itens retirados das estantes: "
+                + descartados + ".");
         System.out.println("Cadastre o periodo de acesso do novo semestre para liberar as estantes.");
     }
 
@@ -407,9 +382,8 @@ public class MenuPrincipal {
     /** Mostra o catalogo, pergunta um titulo e devolve o eBook, ou null se nao existir. */
     private EBook pedirEBookDoCatalogo(String pergunta) {
         consultarCatalogo();
-        String titulo = perguntar(pergunta);
-        EBook ebook = titulo == null ? null : catalogo.buscarPorTitulo(titulo);
-        if (ebook == null && titulo != null) {
+        EBook ebook = catalogo.buscarPorTitulo(perguntar(pergunta));
+        if (ebook == null) {
             System.out.println("eBook nao encontrado no catalogo do semestre.");
         }
         return ebook;
@@ -422,9 +396,8 @@ public class MenuPrincipal {
             return null;
         }
         consultarEstante(aluno);
-        String titulo = perguntar(pergunta);
-        EBook ebook = titulo == null ? null : buscarNaEstante(aluno, titulo);
-        if (ebook == null && titulo != null) {
+        EBook ebook = buscarNaEstante(aluno, perguntar(pergunta));
+        if (ebook == null) {
             System.out.println("Esse eBook nao esta na sua estante.");
         }
         return ebook;
@@ -446,13 +419,17 @@ public class MenuPrincipal {
 
     /** Os arquivos de dados separam os campos por ponto e virgula, entao ele nao pode ir nos valores. */
     private boolean temSeparador(String... valores) {
-        for (String valor : valores) {
-            if (valor.contains(";")) {
-                System.out.println("Nao use ponto e virgula: ele separa os campos no arquivo de dados.");
-                return true;
-            }
+        if (Arrays.stream(valores).anyMatch(valor -> valor.contains(";"))) {
+            System.out.println("Nao use ponto e virgula: ele separa os campos no arquivo de dados.");
+            return true;
         }
         return false;
+    }
+
+    /** Mostra o motivo da recusa e devolve null, para encurtar as validacoes do cadastro. */
+    private Aluno recusar(String motivo) {
+        System.out.println(motivo);
+        return null;
     }
 
     private String situacaoLicenca(EBook ebook) {
@@ -469,26 +446,14 @@ public class MenuPrincipal {
         for (int i = 0; i < valores.length; i++) {
             System.out.println((i + 1) + ". " + valores[i]);
         }
-        Integer escolha = lerOpcao();
-        return escolha != null && escolha >= 1 && escolha <= valores.length ? valores[escolha - 1] : null;
+        int escolha = lerOpcao();
+        return escolha >= 1 && escolha <= valores.length ? valores[escolha - 1] : null;
     }
 
-    private boolean confirmar(String pergunta) {
-        String resposta = perguntar(pergunta);
-        return resposta != null && "s".equalsIgnoreCase(resposta.trim());
-    }
-
-    /**
-     * Le um numero de opcao. Devolve null quando a entrada termina e zero quando o
-     * usuario digita algo que nao e numero, caso que quem chamou trata como invalido.
-     */
-    private Integer lerOpcao() {
-        String entrada = perguntar("Escolha uma opcao");
-        if (entrada == null) {
-            return null;
-        }
+    /** Le a opcao escolhida, devolvendo zero quando o usuario digita algo que nao e numero. */
+    private int lerOpcao() {
         try {
-            return Integer.parseInt(entrada.trim());
+            return Integer.parseInt(perguntar("Escolha uma opcao").trim());
         } catch (NumberFormatException e) {
             return 0;
         }
@@ -496,6 +461,6 @@ public class MenuPrincipal {
 
     private String perguntar(String pergunta) {
         System.out.print(pergunta + ": ");
-        return leitor.hasNextLine() ? leitor.nextLine() : null;
+        return leitor.nextLine();
     }
 }
