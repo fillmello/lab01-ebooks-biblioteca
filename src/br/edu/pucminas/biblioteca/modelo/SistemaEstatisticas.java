@@ -13,11 +13,22 @@ public class SistemaEstatisticas implements Serializable{
     }
 
     public void registrarAdicao(EBook ebook) {
-        // TODO: implementar na Sprint 3
+        adicoesPorTitulo.put(ebook.getTitulo(), adicoesPorTitulo.size() + 1);
     }
 
     public int consultarTotalAdicoes(EBook ebook) {
-        // TODO: implementar na Sprint 3
-        return 0;
+        if (ebook == null || ebook.getTitulo() == null) {
+            return 0;
+        }
+        return adicoesPorTitulo.getOrDefault(ebook.getTitulo(), 0);
+    }
+
+    @Override
+    public String toString(){
+        StringBuilder stringBuilder = new StringBuilder();
+        for (Map.Entry<String, Integer> entrada : adicoesPorTitulo.entrySet()) {
+            stringBuilder.append("Título: " + entrada.getKey());
+        }
+        return stringBuilder.toString();
     }
 }

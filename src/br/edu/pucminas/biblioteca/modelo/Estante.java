@@ -19,7 +19,6 @@ public class Estante implements Serializable {
 
     public boolean adicionar(EBook ebook, TipoLeitura tipo) {
 
-        // FIXME
         if (tipo == TipoLeitura.LIVRE) {
             if (itens.stream().filter(Auxebook -> Auxebook.getTipo() == TipoLeitura.LIVRE).count() < LIMITE_LIVRES) {
                 itens.add(new ItemEstante(ebook, tipo, LocalDate.now()));
@@ -40,9 +39,6 @@ public class Estante implements Serializable {
                 return false;
             }
         }
-
-        // Deve respeitar LIMITE_OBRIGATORIOS e LIMITE_LIVRES.
-        // return false;
     }
 
     public boolean remover(EBook ebook) throws Exception {

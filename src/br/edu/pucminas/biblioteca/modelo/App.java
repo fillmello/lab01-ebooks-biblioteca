@@ -52,6 +52,24 @@ public class App {
 
     }
 
+    public static SistemaEstatisticas lerEstatisticas() {
+        try {
+            ObjectInputStream in = new ObjectInputStream(
+                    new FileInputStream("estatisticas.dat"));
+
+            SistemaEstatisticas estatisticas = (SistemaEstatisticas) in.readObject();
+
+            in.close();
+
+            return estatisticas;
+
+        } catch (IOException | ClassNotFoundException e) {
+            System.out.println("Erro ao ler: " + e.getMessage());
+            return new SistemaEstatisticas();
+        }
+
+    }
+
     public static List<Bibliotecario> lerBibliotecarios() {
         try {
             ObjectInputStream in = new ObjectInputStream(
@@ -69,30 +87,35 @@ public class App {
         }
     }
 
-    public static void salvar(Catalogo catalogo, List<Bibliotecario> bibliotecarios, List<Aluno> alunos) {
+    public static void salvar(Catalogo catalogo, List<Bibliotecario> bibliotecarios, List<Aluno> alunos, SistemaEstatisticas estatisticas) {
         // public static void salvar(Catalogo catalogo) {
         try {
             FileOutputStream arquivoCatalogo = new FileOutputStream("catalogo.dat");
             FileOutputStream arquivoBibliotecarios = new FileOutputStream("bibliotecarios.dat");
             FileOutputStream arquivoAlunos = new FileOutputStream("alunos.dat");
+            FileOutputStream arquivoEstatisticas = new FileOutputStream("estatisticas.dat");
 
             ObjectOutputStream objetoCatalogo = new ObjectOutputStream(arquivoCatalogo);
             ObjectOutputStream objetoBibliotecarios = new ObjectOutputStream(arquivoBibliotecarios);
             ObjectOutputStream objetoAlunos = new ObjectOutputStream(arquivoAlunos);
+            ObjectOutputStream objetoEstatisticas = new ObjectOutputStream(arquivoEstatisticas);
 
             objetoCatalogo.writeObject(catalogo);
             objetoBibliotecarios.writeObject(bibliotecarios);
             objetoAlunos.writeObject(alunos);
+            objetoEstatisticas.writeObject(estatisticas);
 
             objetoCatalogo.close();
             objetoBibliotecarios.close();
             objetoAlunos.close();
+            objetoEstatisticas.close();
 
             arquivoCatalogo.close();
             arquivoBibliotecarios.close();
             arquivoAlunos.close();
+            arquivoEstatisticas.close();
 
-            System.out.println("Catálogo, Aluno e bibliotecarios salvos com sucesso!");
+            System.out.println("Catálogo, Aluno, bibliotecarios e estatisticas salvos com sucesso!");
 
         } catch (Exception e) {
             System.out.println("Erro ao salvar catálogo: " + e.getMessage());
@@ -118,7 +141,7 @@ public class App {
         System.out.println("2 - Criar Bibliotecario");
         System.out.println("3 - Login Aluno");
         System.out.println("4 - Login bibliotecario");
-        System.out.println("5 - TESTES, log em tudo");
+        // System.out.println("5 - TESTES, log em tudo");
 
         System.out.println("0 - Sair");
         System.out.print("Escolha uma opção: ");
@@ -133,6 +156,7 @@ public class App {
         System.out.println("4 - Remover Ebook");
         System.out.println("5 - Adicionar periodo de acesso");
         System.out.println("6 - Remover periodo de acesso");
+        System.out.println("7 - Ver todos os Ebook ja adiconados (estatiticas)");
 
         System.out.println("0 - Sair");
         System.out.print("Escolha uma opção: ");
@@ -273,15 +297,18 @@ public class App {
         // quando um bibliotecario remover um ebook deve excluir nos alunos?
     }
 
-    public static void funcoesBibliotecario(Bibliotecario bibliotecario, List<Aluno> alunos, Catalogo catalogo)
+    public static void funcoesBibliotecario(Bibliotecario bibliotecario, List<Aluno> alunos, Catalogo catalogo, SistemaEstatisticas estatisticas)
             throws Exception {
         int sair = 0;
         while (sair == 0) {
             try {
                 switch (menuBibliotecario(bibliotecario)) {
                     case 1:
-                        bibliotecario.cadastrarEBook(criarEBook(), catalogo);
+                        EBook ebookAdd = criarEBook();
+                        bibliotecario.cadastrarEBook(ebookAdd, catalogo);
                         System.err.println("Ebook adicionado com sucesso!");
+                        estatisticas.registrarAdicao(ebookAdd);
+                        
                         break;
 
                     case 2:
@@ -313,6 +340,10 @@ public class App {
 
                     case 6:
                         bibliotecarioRemovePeriodoDeAcesso(catalogo);
+                        break;
+
+                    case 7:
+                        System.err.println(estatisticas.toString());;
                         break;
 
                     default:
@@ -492,10 +523,10 @@ public class App {
         }
     }
 
-    public static void loginBibliotecario(List<Bibliotecario> bibliotecarios, List<Aluno> alunos, Catalogo catalogo) {
+    public static void loginBibliotecario(List<Bibliotecario> bibliotecarios, List<Aluno> alunos, Catalogo catalogo, SistemaEstatisticas estatisticas) {
         String registro = "";
         do {
-            System.out.print("Digite sua matricula: ");
+            System.out.print("Digite seu registro funcional: ");
             registro = scanner.nextLine();
         } while (registro.isBlank());
 
@@ -512,14 +543,14 @@ public class App {
                 .filter(bibliotecatio -> bibliotecatio.validiar(senhaFinal, registroFinal))
                 .findFirst();
 
-        System.err.println("bibliotecario: " + biblitecarioTentativa);
+        // System.err.println("bibliotecario: " + biblitecarioTentativa);
         if (biblitecarioTentativa.isEmpty()) {
             System.err.println("Não foi possivel encontrar nenhum bibliotecario, tenta novamente");
             return;
         }
 
         try {
-            funcoesBibliotecario(biblitecarioTentativa.get(), alunos, catalogo);
+            funcoesBibliotecario(biblitecarioTentativa.get(), alunos, catalogo, estatisticas);
         } catch (Exception e) {
             System.err.println("Um erro inesperado aconteceu, tente novamnete");
             return;
@@ -545,7 +576,7 @@ public class App {
         Optional<Aluno> alunoTentativa = alunos.stream().filter(aluno -> aluno.validiar(senhaFinal, matriculaFinal))
                 .findFirst();
 
-        System.err.println("aluno: " + alunoTentativa);
+        // System.err.println("aluno: " + alunoTentativa);
         if (alunoTentativa.isEmpty()) {
             System.err.println("Não foi possivel encontrar nenhum aluno, tenta novamente");
             return;
@@ -615,15 +646,24 @@ public class App {
         // FIXME
         // System.out.print("ID: ");
         // String id = scanner.nextLine();
+        String nome = "";
+        
 
-        System.out.print("Nome: ");
-        String nome = scanner.nextLine();
+        do {
+            System.out.print("Nome: ");
+            nome = scanner.nextLine();
+        } while(nome.isBlank());
+        
+        String senha = "";
 
-        System.out.print("Senha: ");
-        String senha = scanner.nextLine();
+        do {
+            System.out.print("Senha: ");
+            senha = scanner.nextLine();
+        } while(senha.isBlank());
+
 
         System.out.print("Matrícula: ");
-        String matricula = scanner.nextLine();
+        String matricula = String.valueOf(lerInteiro());
 
         return new Aluno(
                 id,
@@ -640,14 +680,22 @@ public class App {
         // System.out.print("ID: ");
         // String id = scanner.nextLine();
 
-        System.out.print("Nome: ");
-        String nome = scanner.nextLine();
+        String nome = "";
+        
+        do {
+            System.out.print("Nome: ");
+            nome = scanner.nextLine();
+        } while(nome.isBlank());
+        
+        String senha = "";
 
-        System.out.print("Senha: ");
-        String senha = scanner.nextLine();
+        do {
+            System.out.print("Senha: ");
+            senha = scanner.nextLine();
+        } while(senha.isBlank());
 
         System.out.print("Registro funcional: ");
-        String registroFuncional = scanner.nextLine();
+        String registroFuncional = String.valueOf(lerInteiro());
 
         return new Bibliotecario(
                 id,
@@ -660,6 +708,7 @@ public class App {
         Catalogo catalogo = lerCatalogo();
         List<Bibliotecario> bibliotecarios = lerBibliotecarios();
         List<Aluno> alunos = lerAlunos();
+        SistemaEstatisticas estatisticas = lerEstatisticas();
 
         while (true) {
             int sair = 0;
@@ -677,7 +726,7 @@ public class App {
                     break;
 
                 case 4:
-                    loginBibliotecario(bibliotecarios, alunos, catalogo);
+                    loginBibliotecario(bibliotecarios, alunos, catalogo, estatisticas);
                     break;
 
                 // case 5:
@@ -696,7 +745,7 @@ public class App {
                 //     break; 
 
                 default:
-                    salvar(catalogo, bibliotecarios, alunos);
+                    salvar(catalogo, bibliotecarios, alunos, estatisticas);
                     sair = 1;
                     break;
             }

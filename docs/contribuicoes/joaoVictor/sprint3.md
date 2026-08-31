@@ -11,7 +11,7 @@ Contribuição: mantivemos a divisão da Sprint 1
 
 Decisões: 
 -> Periodo de acesso coloquei para pegar a data de agora 
--> referi testar e usar o Serializable
+-> preferi testar e usar o Serializable
 
 
-Uso de IA: usei o Chat GPT para relembrar comandos.
+Uso de IA: usei o Chat GPT para relembrar comandos, gemini no consultarTotalAdicoes das estatiticas

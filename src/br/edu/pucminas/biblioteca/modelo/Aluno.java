@@ -63,8 +63,8 @@ public class Aluno extends Usuario {
     }
 
     public boolean validiar(String senha, String matricula){
-        System.err.println("TESTES MATRICULA: " + matricula + " " + this.matricula);
-        System.err.println(matricula.equals(this.matricula));
+        // System.err.println("TESTES MATRICULA: " + matricula + " " + this.matricula);
+        // System.err.println(matricula.equals(this.matricula));
         if (matricula.equals(this.matricula) && super.validaSenha(senha)){
             return true;
         }
