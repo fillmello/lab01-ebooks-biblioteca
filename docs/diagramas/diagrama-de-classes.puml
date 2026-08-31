@@ -2,21 +2,26 @@
 skinparam classAttributeIconSize 0
 hide empty members
 
+package modelo {
+
 ' ===== UC01 - Realizar login =====
 abstract class Usuario {
   -id: String
   -nome: String
   -senha: String
+  +autenticar(senhaInformada: String): boolean
   +getId(): String
   +getNome(): String
+  +getSenha(): String
 }
 
 class Aluno {
   -matricula: String
   -estante: Estante
-  +adicionarEBook(ebook: EBook, tipo: TipoLeitura): boolean
-  +removerEBook(ebook: EBook): boolean
+  +adicionarEBook(ebook: EBook, tipo: TipoLeitura, periodo: PeriodoAcesso, data: LocalDate, estatisticas: SistemaEstatisticas): boolean
+  +removerEBook(ebook: EBook, periodo: PeriodoAcesso, data: LocalDate): boolean
   +acessarEBook(ebook: EBook): boolean
+  +encerrarAcessoEBook(ebook: EBook): boolean
   +getMatricula(): String
   +getEstante(): Estante
 }
@@ -34,11 +39,15 @@ class Estante {
   -LIMITE_OBRIGATORIOS: int
   -LIMITE_LIVRES: int
   -itens: List<ItemEstante>
-  +adicionar(ebook: EBook, tipo: TipoLeitura): boolean
-  +remover(ebook: EBook): boolean
+  +adicionar(ebook: EBook, tipo: TipoLeitura, periodo: PeriodoAcesso, data: LocalDate): boolean
+  +remover(ebook: EBook, periodo: PeriodoAcesso, data: LocalDate): boolean
+  +restaurar(item: ItemEstante): void
+  +descartarNaoLicenciados(licenciados: List<EBook>): int
   +listar(): List<ItemEstante>
   +contarPorTipo(tipo: TipoLeitura): int
   +contemEBook(ebook: EBook): boolean
+  +vagasRestantes(tipo: TipoLeitura): int
+  -limiteDe(tipo: TipoLeitura): int
 }
 
 class ItemEstante {
@@ -67,6 +76,9 @@ class EBook {
   +getFormato(): Formato
   +getCategoria(): Categoria
   +getLicenca(): Licenca
+  +equals(outro: Object): boolean
+  +hashCode(): int
+  +toString(): String
 }
 
 enum Formato {
@@ -82,25 +94,35 @@ enum Categoria {
 
 ' ===== UC04 - Acessar eBook =====
 class Licenca {
+  +{static} LIMITE_MAXIMO_SIMULTANEOS: int = 60
   -limiteAcessosSimultaneos: int
   -acessosAtivos: int
   +temVagaDisponivel(): boolean
   +ocuparAcesso(): boolean
   +liberarAcesso(): void
   +getAcessosAtivos(): int
+  +getLimiteAcessosSimultaneos(): int
 }
 
 ' ===== UC08 - Renovar catalogo do semestre =====
 class Catalogo {
   -semestre: String
-  -MINIMO_ALUNOS_RENOVACAO: int
+  -{static} MINIMO_ALUNOS_RENOVACAO: int = 3
   -ebooks: List<EBook>
   -periodosAcesso: List<PeriodoAcesso>
   +adicionarEBook(ebook: EBook): void
   +removerEBook(ebook: EBook): void
   +listarEBooks(): List<EBook>
+  +buscarPorTitulo(titulo: String): EBook
+  +adicionarPeriodo(periodo: PeriodoAcesso): void
+  +listarPeriodos(): List<PeriodoAcesso>
+  +periodoAbertoEm(data: LocalDate): PeriodoAcesso
+  +podeAdicionar(ebook: EBook, data: LocalDate): boolean
+  +periodoDeAcessoEncerrado(data: LocalDate): boolean
   +renovar(alunos: List<Aluno>): Catalogo
+  +contarAlunosCom(ebook: EBook, alunos: List<Aluno>): int
   +getSemestre(): String
+  -proximoSemestre(): String
 }
 
 class PeriodoAcesso {
@@ -108,6 +130,8 @@ class PeriodoAcesso {
   -dataFim: LocalDate
   +estaAberto(data: LocalDate): boolean
   +jaEncerrou(data: LocalDate): boolean
+  +getDataInicio(): LocalDate
+  +getDataFim(): LocalDate
 }
 
 ' ===== UC07 - Registrar estatistica de uso =====
@@ -115,6 +139,47 @@ class SistemaEstatisticas {
   -adicoesPorTitulo: Map<String, Integer>
   +registrarAdicao(ebook: EBook): void
   +consultarTotalAdicoes(ebook: EBook): int
+  +restaurarAdicoes(titulo: String, total: int): void
+  +listarAdicoes(): Map<String, Integer>
+}
+
+}
+
+' ===== Interface e persistencia, acrescentadas na Sprint 3 =====
+package interface_cli <<Rectangle>> {
+  class MenuPrincipal {
+    -catalogo: Catalogo
+    -usuarios: List<Usuario>
+    -estatisticas: SistemaEstatisticas
+    +{static} main(args: String[]): void
+  }
+  class DadosIniciais {
+    +{static} criarCatalogo(): Catalogo
+    +{static} criarUsuarios(): List<Usuario>
+  }
+}
+
+package persistencia <<Rectangle>> {
+  class CatalogoRepositorioArquivo {
+    +salvar(catalogo: Catalogo): void
+    +carregar(): Catalogo
+  }
+  class EBookRepositorioArquivo {
+    +salvar(ebooks: List<EBook>): void
+    +carregar(): List<EBook>
+  }
+  class UsuarioRepositorioArquivo {
+    +salvar(usuarios: List<Usuario>): void
+    +carregar(): List<Usuario>
+  }
+  class EstanteRepositorioArquivo {
+    +salvar(alunos: List<Aluno>): void
+    +carregar(alunos: List<Aluno>, catalogo: Catalogo): void
+  }
+  class EstatisticasRepositorioArquivo {
+    +salvar(estatisticas: SistemaEstatisticas): void
+    +carregar(): SistemaEstatisticas
+  }
 }
 
 ' ===== Relacionamentos =====
@@ -123,6 +188,8 @@ Usuario <|-- Bibliotecario
 
 Aluno "1" *-- "1" Estante
 Estante "1" *-- "0..6" ItemEstante
+Estante ..> PeriodoAcesso : valida janela
+Aluno ..> SistemaEstatisticas : notifica a adicao
 ItemEstante "0..*" o-- "1" EBook
 ItemEstante --> TipoLeitura
 
@@ -131,8 +198,15 @@ EBook --> Formato
 EBook --> Categoria
 
 Catalogo "1" o-- "0..*" EBook
-Catalogo "1" *-- "1..*" PeriodoAcesso
+Catalogo "1" *-- "0..*" PeriodoAcesso
 
 SistemaEstatisticas "1" ..> "0..*" EBook : registra uso
+
+MenuPrincipal ..> Usuario
+MenuPrincipal ..> Catalogo
+MenuPrincipal ..> SistemaEstatisticas
+MenuPrincipal ..> DadosIniciais
+MenuPrincipal ..> persistencia
+CatalogoRepositorioArquivo ..> EBookRepositorioArquivo
 
 @enduml
