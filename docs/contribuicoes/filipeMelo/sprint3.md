@@ -35,3 +35,16 @@ passar pela validação do período de acesso, que só vale para uma adição no
 
 Uso de IA: usei o Claude (Anthropic) para revisar a leitura dos arquivos, principalmente o
 tratamento de linhas incompletas e da primeira execução, quando os arquivos ainda não existem.
+
+## Semana 3
+
+Contribuição: acrescentei à tela de login a criação de conta para quem ainda não tem cadastro, com
+as validações de id e matrícula já em uso e o login automático depois de criar.
+
+Decisões: a tela só cria conta de aluno. O enunciado diz que é a equipe da biblioteca que mantém as
+informações sobre os bibliotecários e os alunos, então deixar qualquer um se cadastrar como
+bibliotecário daria acesso ao cadastro de eBooks e à renovação do catálogo. Aproveitei para barrar
+o ponto e vírgula nos campos digitados, aqui e no cadastro de eBook, porque é o separador dos
+arquivos de dados e quebraria a leitura na execução seguinte.
+
+Uso de IA: usei o Claude (Anthropic) para revisar as validações e testar os casos de recusa.

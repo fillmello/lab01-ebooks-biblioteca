@@ -80,9 +80,16 @@ public class MenuPrincipal {
 
     private Usuario realizarLogin() {
         while (true) {
-            String id = perguntar("\nLogin (id do usuario, ou 0 para encerrar)");
+            String id = perguntar("\nLogin (id do usuario, 'novo' para criar um login, ou 0 para encerrar)");
             if (id == null || "0".equals(id.trim())) {
                 return null;
+            }
+            if ("novo".equalsIgnoreCase(id.trim())) {
+                Aluno criado = criarLogin();
+                if (criado != null) {
+                    return criado;
+                }
+                continue;
             }
             String senha = perguntar("Senha");
             if (senha == null) {
@@ -95,6 +102,46 @@ public class MenuPrincipal {
             }
             System.out.println("Id ou senha invalidos. Tente novamente.");
         }
+    }
+
+    /**
+     * Cria um login de aluno para quem ainda nao tem cadastro e ja o deixa logado.
+     * Devolve null quando os dados informados nao servem, voltando para a tela de login.
+     * Login de bibliotecario nao entra aqui: pelo enunciado, quem mantem os dados dos
+     * bibliotecarios e a propria equipe da biblioteca.
+     */
+    private Aluno criarLogin() {
+        String id = perguntar("Escolha um id de login");
+        String nome = perguntar("Nome completo");
+        String matricula = perguntar("Matricula");
+        String senha = perguntar("Senha");
+        if (id == null || nome == null || matricula == null || senha == null) {
+            return null;
+        }
+        id = id.trim();
+        nome = nome.trim();
+        matricula = matricula.trim();
+        if (id.isEmpty() || nome.isEmpty() || matricula.isEmpty() || senha.isEmpty()) {
+            System.out.println("Id, nome, matricula e senha sao obrigatorios.");
+            return null;
+        }
+        if (temSeparador(id, nome, matricula, senha)) {
+            return null;
+        }
+        if (buscarUsuario(id) != null) {
+            System.out.println("Ja existe um usuario com o id \"" + id + "\". Escolha outro.");
+            return null;
+        }
+        String finalMatricula = matricula;
+        if (alunos().stream().anyMatch(a -> a.getMatricula().equals(finalMatricula))) {
+            System.out.println("Ja existe um aluno com a matricula " + matricula + ".");
+            return null;
+        }
+        Aluno aluno = new Aluno(id, nome, senha, matricula);
+        usuarios.add(aluno);
+        salvarDados();
+        System.out.println("Login criado. Bem-vindo(a), " + aluno.getNome() + ".");
+        return aluno;
     }
 
     // ===== Menus =====
@@ -254,7 +301,7 @@ public class MenuPrincipal {
     private void cadastrarEBook(Bibliotecario bibliotecario) {
         String titulo = perguntar("Titulo");
         String editora = perguntar("Editora");
-        if (titulo == null || editora == null) {
+        if (titulo == null || editora == null || temSeparador(titulo, editora)) {
             return;
         }
         Formato formato = escolher("Formato", Formato.values());
@@ -404,6 +451,17 @@ public class MenuPrincipal {
 
     private List<Aluno> alunos() {
         return usuarios.stream().filter(Aluno.class::isInstance).map(Aluno.class::cast).toList();
+    }
+
+    /** Os arquivos de dados separam os campos por ponto e virgula, entao ele nao pode ir nos valores. */
+    private boolean temSeparador(String... valores) {
+        for (String valor : valores) {
+            if (valor.contains(";")) {
+                System.out.println("Nao use ponto e virgula: ele separa os campos no arquivo de dados.");
+                return true;
+            }
+        }
+        return false;
     }
 
     private String situacaoLicenca(EBook ebook) {
