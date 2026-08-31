@@ -62,16 +62,21 @@ exemplo usam a senha `123`:
 | `carla` | Bibliotecária |
 | `bruno`, `ana`, `lucas`, `mariana` | Alunos |
 
-Quem ainda não tem cadastro digita `novo` na tela de login e cria a própria conta de aluno,
-escolhendo id, nome, matrícula e senha. O sistema recusa id ou matrícula já usados e já deixa o
-aluno logado. Contas de bibliotecário não são criadas por aí: pelo enunciado, é a equipe da
-biblioteca que mantém as informações sobre os bibliotecários e os alunos.
+Há dois caminhos para criar usuários:
+
+- **Menu inicial, opção 2**, aberto a qualquer pessoa: cria apenas conta de **aluno**, com id, nome,
+  matrícula e senha.
+- **Menu do bibliotecário, opção 7**, exige estar logado como bibliotecário: cria **aluno ou
+  bibliotecário**. É o único caminho para criar um bibliotecário novo, porque pelo enunciado é a
+  equipe da biblioteca que mantém as informações sobre os bibliotecários e os alunos.
+
+Nos dois casos o sistema recusa id, matrícula ou registro funcional já em uso.
 
 ### Funcionalidades implementadas
 
 | Caso de uso | Onde aparece no menu | Regra aplicada |
 | --- | --- | --- |
-| UC01 Realizar login | Tela de login | Senha validada em `Usuario.autenticar`; a mesma tela cria a conta de aluno que ainda não existe |
+| UC01 Realizar login | Menu inicial, opção 1 | Senha validada em `Usuario.autenticar`; o perfil autenticado decide qual menu aparece |
 | UC02 Adicionar eBook à estante | Menu do aluno, opção 2 | Até 4 obrigatórios e 2 livres, só com o período de acesso aberto |
 | UC03 Remover eBook da estante | Menu do aluno, opção 3 | Só com o período de acesso aberto; a vaga do tipo volta a ficar livre |
 | UC04 Acessar eBook | Menu do aluno, opções 5 e 6 | Bloqueia ao atingir o limite de acessos simultâneos da licença (máximo 60) |

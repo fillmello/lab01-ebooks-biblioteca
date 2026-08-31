@@ -32,11 +32,13 @@ não mudaram: `Aluno` continua composto por `Estante`, `ItemEstante` continua ag
 - **Acessos simultâneos não são persistidos.** Um acesso vale enquanto está aberto, então
   `acessosAtivos` é estado de execução: começa em zero a cada vez que o programa sobe, e os acessos
   abertos pelo aluno são liberados quando ele sai do menu.
-- **Criação de login na tela de entrada.** Não é um caso de uso do enunciado, que trata o cadastro
-  de usuários como responsabilidade da equipe da biblioteca. Foi acrescentado para o protótipo poder
-  ser demonstrado com um aluno novo, sem depender dos dados de exemplo. Por isso a tela só cria
-  aluno: liberar a criação de bibliotecário deixaria qualquer pessoa assumir o perfil que cadastra
-  eBooks e renova o catálogo.
+- **Cadastro de usuários, nos dois menus.** O enunciado diz que a equipe da biblioteca mantém as
+  informações sobre os bibliotecários e os alunos, mas isso não virou caso de uso na Sprint 1. Na
+  implementação ficou no menu do bibliotecário, que cria aluno ou bibliotecário e é o único caminho
+  para criar um bibliotecário novo. O menu inicial também cria conta, porém só de aluno, para o
+  protótipo poder ser demonstrado com um aluno novo sem depender dos dados de exemplo: liberar ali a
+  criação de bibliotecário deixaria qualquer pessoa assumir o perfil que cadastra eBooks e renova o
+  catálogo.
 - **Cadastro de período de acesso no menu do bibliotecário.** Não é um caso de uso do enunciado, mas
   sem ele o catálogo gerado pela renovação ficaria sem período e nenhum aluno conseguiria montar a
   estante no semestre seguinte.

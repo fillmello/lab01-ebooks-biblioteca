@@ -108,25 +108,45 @@ public class MenuPrincipal {
 
     public static void criarLogin() {
         System.out.println("\n===== CRIAR LOGIN DE ALUNO =====");
+        if (cadastrarUsuario("ALUNO")) {
+            System.out.println("Login criado. Agora entre no sistema com o id informado.");
+        }
+    }
+
+    /**
+     * Pergunta os dados de um usuario novo e o acrescenta ao sistema. Devolve false
+     * quando o id ou o vinculo ja estao em uso, ou quando algum campo tem o separador
+     * dos arquivos de dados.
+     */
+    public static boolean cadastrarUsuario(String perfil) {
+        boolean ehBibliotecario = "BIBLIOTECARIO".equals(perfil);
         String id = perguntar("Id de login");
         String nome = perguntar("Nome completo");
-        String matricula = perguntar("Matricula");
+        String vinculo = perguntar(ehBibliotecario ? "Registro funcional" : "Matricula");
         String senha = perguntar("Senha");
 
-        if (temSeparador(id, nome, matricula, senha)) {
-            return;
+        if (temSeparador(id, nome, vinculo, senha)) {
+            return false;
         }
         if (buscarUsuario(id) != null) {
             System.out.println("Ja existe um usuario com o id \"" + id + "\".");
-            return;
+            return false;
         }
-        if (alunos().stream().anyMatch(a -> a.getMatricula().equals(matricula))) {
-            System.out.println("Ja existe um aluno com a matricula " + matricula + ".");
-            return;
+        if (vinculoEmUso(vinculo)) {
+            System.out.println("Ja existe um usuario com "
+                    + (ehBibliotecario ? "o registro funcional " : "a matricula ") + vinculo + ".");
+            return false;
         }
-        usuarios.add(new Aluno(id, nome, senha, matricula));
+        usuarios.add(ehBibliotecario ? new Bibliotecario(id, nome, senha, vinculo)
+                : new Aluno(id, nome, senha, vinculo));
         salvarDados();
-        System.out.println("Login criado. Agora entre no sistema com o id " + id + ".");
+        return true;
+    }
+
+    /** A matricula do aluno e o registro funcional do bibliotecario nao podem se repetir. */
+    public static boolean vinculoEmUso(String vinculo) {
+        return usuarios.stream().anyMatch(u -> vinculo.equals(u instanceof Aluno aluno
+                ? aluno.getMatricula() : ((Bibliotecario) u).getRegistroFuncional()));
     }
 
     // ===== Menu do aluno (UC02, UC03 e UC04) =====
@@ -284,6 +304,7 @@ public class MenuPrincipal {
         System.out.println("4 - Consultar alunos com um eBook");
         System.out.println("5 - Ver estatisticas de uso");
         System.out.println("6 - Renovar catalogo do semestre");
+        System.out.println("7 - Cadastrar usuario");
         System.out.println("0 - Sair");
         System.out.print("Escolha uma opcao: ");
         return lerInteiro();
@@ -316,6 +337,10 @@ public class MenuPrincipal {
 
                     case 6:
                         bibliotecarioRenovaCatalogo(bibliotecario);
+                        break;
+
+                    case 7:
+                        bibliotecarioCadastraUsuario();
                         break;
 
                     case 0:
@@ -424,6 +449,22 @@ public class MenuPrincipal {
                 + catalogo.listarEBooks().size() + " titulo(s). Itens retirados das estantes: "
                 + descartados + ".");
         System.out.println("Adicione o periodo de acesso do novo semestre para liberar as estantes.");
+    }
+
+    /**
+     * Cadastro de aluno ou de bibliotecario, feito por quem ja esta logado como
+     * bibliotecario. E o unico caminho para criar um bibliotecario novo: pelo
+     * enunciado, quem mantem os dados dos usuarios e a equipe da biblioteca.
+     */
+    public static void bibliotecarioCadastraUsuario() {
+        System.out.println("\n===== CADASTRAR USUARIO =====");
+        String perfil = selecionar("Perfil do novo usuario", List.of("ALUNO", "BIBLIOTECARIO"));
+        if (perfil == null) {
+            return;
+        }
+        if (cadastrarUsuario(perfil)) {
+            System.out.println(perfil + " cadastrado com sucesso.");
+        }
     }
 
     public static void consultarCatalogo() {
