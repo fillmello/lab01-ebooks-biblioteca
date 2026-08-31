@@ -2,7 +2,6 @@ package br.edu.pucminas.biblioteca;
 
 import br.edu.pucminas.biblioteca.modelo.*;
 import br.edu.pucminas.biblioteca.persistencia.BibliotecaRepositorioArquivo;
-import java.io.IOException;
 import java.time.LocalDate;
 import java.time.format.DateTimeParseException;
 import java.util.*;
@@ -61,27 +60,14 @@ public class MenuPrincipal {
     // ===== Carga e gravacao dos dados =====
 
     public static void carregarDados() {
-        try {
-            aplicar(repositorio.carregar());
-        } catch (RuntimeException | IOException e) {
-            System.out.println("Nao foi possivel ler os dados gravados: " + e.getMessage());
-            System.out.println("O sistema continua com os dados iniciais, sem gravar em disco.");
-            aplicar(repositorio.dadosIniciais());
-        }
-    }
-
-    public static void aplicar(BibliotecaRepositorioArquivo.Dados dados) {
-        catalogo = dados.catalogo();
-        usuarios = new ArrayList<>(dados.usuarios());
-        estatisticas = dados.estatisticas();
+        BibliotecaRepositorioArquivo.Dados dados = repositorio.carregar();
+        catalogo = dados.catalogo;
+        usuarios = new ArrayList<>(dados.usuarios);
+        estatisticas = dados.estatisticas;
     }
 
     public static void salvarDados() {
-        try {
-            repositorio.salvar(catalogo, usuarios, estatisticas);
-        } catch (IOException e) {
-            System.out.println("Nao foi possivel gravar os dados: " + e.getMessage());
-        }
+        repositorio.salvar(catalogo, usuarios, estatisticas);
     }
 
     // ===== UC01 - Realizar login =====
@@ -125,9 +111,6 @@ public class MenuPrincipal {
         String vinculo = perguntar(ehBibliotecario ? "Registro funcional" : "Matricula");
         String senha = perguntar("Senha");
 
-        if (temSeparador(id, nome, vinculo, senha)) {
-            return false;
-        }
         if (buscarUsuario(id) != null) {
             System.out.println("Ja existe um usuario com o id \"" + id + "\".");
             return false;
@@ -362,9 +345,6 @@ public class MenuPrincipal {
         System.out.println("\n===== CADASTRAR EBOOK =====");
         String titulo = perguntar("Titulo");
         String editora = perguntar("Editora");
-        if (temSeparador(titulo, editora)) {
-            return;
-        }
         Formato formato = selecionar("Formato", List.of(Formato.values()));
         Categoria categoria = selecionar("Categoria", List.of(Categoria.values()));
         if (formato == null || categoria == null) {
@@ -519,15 +499,6 @@ public class MenuPrincipal {
             resposta = scanner.nextLine().trim();
         }
         return resposta;
-    }
-
-    /** Os arquivos de dados separam os campos por ponto e virgula, entao ele nao pode ir nos valores. */
-    public static boolean temSeparador(String... valores) {
-        if (Arrays.stream(valores).anyMatch(valor -> valor.contains(";"))) {
-            System.out.println("Nao use ponto e virgula: ele separa os campos no arquivo de dados.");
-            return true;
-        }
-        return false;
     }
 
     public static Usuario buscarUsuario(String id) {

@@ -5,7 +5,7 @@ hide empty members
 package modelo {
 
 ' ===== UC01 - Realizar login =====
-abstract class Usuario {
+abstract class Usuario implements Serializable {
   -id: String
   -nome: String
   -senha: String
@@ -162,15 +162,12 @@ package interface <<Rectangle>> {
 
 package persistencia <<Rectangle>> {
   class BibliotecaRepositorioArquivo {
-    -PASTA: String
-    -SEP: String
+    -ARQUIVO: String
     +salvar(catalogo: Catalogo, usuarios: List<Usuario>, estatisticas: SistemaEstatisticas): void
     +carregar(): Dados
     +dadosIniciais(): Dados
-    -escrever(nome: String, linhas: List<String>): void
-    -ler(nome: String, minimoDeCampos: int): List<String[]>
   }
-  class Dados <<record>> {
+  class Dados {
     +catalogo: Catalogo
     +usuarios: List<Usuario>
     +estatisticas: SistemaEstatisticas

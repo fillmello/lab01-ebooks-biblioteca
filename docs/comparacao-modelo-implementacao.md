@@ -42,12 +42,16 @@ não mudaram: `Aluno` continua composto por `Estante`, `ItemEstante` continua ag
 - **Cadastro de período de acesso no menu do bibliotecário.** Não é um caso de uso do enunciado, mas
   sem ele o catálogo gerado pela renovação ficaria sem período e nenhum aluno conseguiria montar a
   estante no semestre seguinte.
-- **Uma única classe de persistência.** O roteiro mostra um `EBookRepositorioArquivo`, mas o
-  protótipo precisa gravar cinco arquivos. Chegamos a criar uma classe por arquivo e desfizemos:
-  as cinco eram o mesmo código de leitura e escrita, mudando só os campos de cada linha. Ficou um
-  `BibliotecaRepositorioArquivo` com dois métodos de apoio, `escrever` e `ler`, reaproveitados por
-  todos os arquivos. Os dados de exemplo da primeira execução também foram para lá, como o método
-  `dadosIniciais()`, em vez de uma classe separada.
+- **Persistência por serialização, em um arquivo só.** Começamos com texto separado por ponto e
+  vírgula, em cinco arquivos e cinco classes de repositório. Trocamos por serialização de objetos,
+  uma das estratégias que o roteiro apresenta, porque o código de gravar e ler ficou muito menor: o
+  Java grava o objeto inteiro, então sumiram a montagem das linhas, o `split`, as conversões de
+  texto para enum, data e número, e a religação entre a estante do aluno e o eBook do catálogo.
+  Ficou uma classe, `BibliotecaRepositorioArquivo`, com `salvar`, `carregar` e os dados de exemplo
+  da primeira execução. Os três objetos vão no mesmo arquivo, e não em três, para o eBook da estante
+  continuar sendo o mesmo objeto do catálogo e a contagem de acessos simultâneos bater nos dois
+  lugares. Em troca, o arquivo é binário e não dá para conferir em um editor de texto, que era a
+  vantagem do formato anterior.
 - **Retorno `boolean` nas regras de estante e exceção no cadastro.** Limite atingido e período
   fechado são respostas esperadas do fluxo e voltam como `false`; dado obrigatório faltando é erro
   de preenchimento e vira `IllegalArgumentException`, capturada pelo menu.

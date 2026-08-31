@@ -1,9 +1,10 @@
 package br.edu.pucminas.biblioteca.modelo;
 
+import java.io.Serializable;
 import java.time.LocalDate;
 
 /** Periodo de acesso do semestre, durante o qual a estante pode ser alterada. */
-public class PeriodoAcesso {
+public class PeriodoAcesso implements Serializable {
 
     private LocalDate dataInicio;
     private LocalDate dataFim;

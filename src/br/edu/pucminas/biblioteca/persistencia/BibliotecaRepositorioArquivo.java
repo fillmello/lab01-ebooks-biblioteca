@@ -1,130 +1,72 @@
 package br.edu.pucminas.biblioteca.persistencia;
 
-import br.edu.pucminas.biblioteca.modelo.Aluno;
-import br.edu.pucminas.biblioteca.modelo.Bibliotecario;
-import br.edu.pucminas.biblioteca.modelo.Catalogo;
-import br.edu.pucminas.biblioteca.modelo.Categoria;
-import br.edu.pucminas.biblioteca.modelo.EBook;
-import br.edu.pucminas.biblioteca.modelo.Formato;
-import br.edu.pucminas.biblioteca.modelo.ItemEstante;
-import br.edu.pucminas.biblioteca.modelo.Licenca;
-import br.edu.pucminas.biblioteca.modelo.PeriodoAcesso;
-import br.edu.pucminas.biblioteca.modelo.SistemaEstatisticas;
-import br.edu.pucminas.biblioteca.modelo.TipoLeitura;
-import br.edu.pucminas.biblioteca.modelo.Usuario;
-import java.io.BufferedReader;
+import br.edu.pucminas.biblioteca.modelo.*;
 import java.io.File;
-import java.io.FileReader;
-import java.io.FileWriter;
-import java.io.IOException;
-import java.io.PrintWriter;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 
 /**
- * Grava e le os dados do sistema em arquivos texto na pasta dados/, um registro por
- * linha e campos separados por ponto e virgula.
+ * Grava e le os dados do sistema no arquivo dados/biblioteca.dat.
+ * O Java grava os objetos inteiros, entao nao e preciso montar nem separar texto.
  */
 public class BibliotecaRepositorioArquivo {
 
     private static final String PASTA = "dados";
-    private static final String SEP = ";";
+    private static final String ARQUIVO = "dados/biblioteca.dat";
 
-    /** O que o sistema precisa ter em memoria depois de ler os arquivos. */
-    public record Dados(Catalogo catalogo, List<Usuario> usuarios, SistemaEstatisticas estatisticas) {
+    /** As tres coisas que o sistema grava e le de uma vez so. */
+    public static class Dados {
+        public Catalogo catalogo;
+        public List<Usuario> usuarios;
+        public SistemaEstatisticas estatisticas;
     }
 
-    public void salvar(Catalogo catalogo, List<Usuario> usuarios, SistemaEstatisticas estatisticas)
-            throws IOException {
-        List<String> catalogoTxt = new ArrayList<>(List.of("SEMESTRE" + SEP + catalogo.getSemestre()));
-        for (PeriodoAcesso periodo : catalogo.listarPeriodos()) {
-            catalogoTxt.add("PERIODO" + SEP + periodo.getDataInicio() + SEP + periodo.getDataFim());
-        }
-        escrever("catalogo.txt", catalogoTxt);
+    public void salvar(Catalogo catalogo, List<Usuario> usuarios, SistemaEstatisticas estatisticas) {
+        try {
+            new File(PASTA).mkdirs();
 
-        List<String> ebooksTxt = new ArrayList<>();
-        for (EBook ebook : catalogo.listarEBooks()) {
-            ebooksTxt.add(ebook.getTitulo() + SEP + ebook.getEditora() + SEP + ebook.getFormato()
-                    + SEP + ebook.getCategoria() + SEP + ebook.getLicenca().getLimiteAcessosSimultaneos());
-        }
-        escrever("ebooks.txt", ebooksTxt);
+            ObjectOutputStream saida = new ObjectOutputStream(new FileOutputStream(ARQUIVO));
+            saida.writeObject(catalogo);
+            saida.writeObject(usuarios);
+            saida.writeObject(estatisticas);
+            saida.close();
 
-        List<String> usuariosTxt = new ArrayList<>();
-        List<String> estantesTxt = new ArrayList<>();
-        for (Usuario usuario : usuarios) {
-            boolean ehAluno = usuario instanceof Aluno;
-            String vinculo = ehAluno ? ((Aluno) usuario).getMatricula()
-                    : ((Bibliotecario) usuario).getRegistroFuncional();
-            usuariosTxt.add((ehAluno ? "ALUNO" : "BIBLIOTECARIO") + SEP + usuario.getId() + SEP
-                    + usuario.getNome() + SEP + usuario.getSenha() + SEP + vinculo);
-            if (usuario instanceof Aluno aluno) {
-                for (ItemEstante item : aluno.getEstante().listar()) {
-                    estantesTxt.add(aluno.getMatricula() + SEP + item.getEBook().getTitulo()
-                            + SEP + item.getTipo() + SEP + item.getDataAdicao());
-                }
-            }
+        } catch (Exception e) {
+            System.out.println("Erro ao salvar: " + e.getMessage());
         }
-        escrever("usuarios.txt", usuariosTxt);
-        escrever("estantes.txt", estantesTxt);
-
-        List<String> estatisticasTxt = new ArrayList<>();
-        for (Map.Entry<String, Integer> adicao : estatisticas.listarAdicoes().entrySet()) {
-            estatisticasTxt.add(adicao.getKey() + SEP + adicao.getValue());
-        }
-        escrever("estatisticas.txt", estatisticasTxt);
     }
 
-    /** Devolve o que esta gravado ou, na primeira execucao, o acervo de exemplo. */
-    public Dados carregar() throws IOException {
-        Catalogo catalogo = null;
-        for (String[] campos : ler("catalogo.txt", 2)) {
-            if ("SEMESTRE".equals(campos[0])) {
-                catalogo = new Catalogo(campos[1]);
-            } else if ("PERIODO".equals(campos[0]) && campos.length >= 3 && catalogo != null) {
-                catalogo.adicionarPeriodo(
-                        new PeriodoAcesso(LocalDate.parse(campos[1]), LocalDate.parse(campos[2])));
-            }
-        }
-        List<Usuario> usuarios = new ArrayList<>();
-        for (String[] campos : ler("usuarios.txt", 5)) {
-            usuarios.add("ALUNO".equals(campos[0])
-                    ? new Aluno(campos[1], campos[2], campos[3], campos[4])
-                    : new Bibliotecario(campos[1], campos[2], campos[3], campos[4]));
-        }
-        if (catalogo == null || usuarios.isEmpty()) {
-            System.out.println("Primeira execucao: criando os dados iniciais em dados/.");
-            Dados iniciais = dadosIniciais();
-            salvar(iniciais.catalogo(), iniciais.usuarios(), iniciais.estatisticas());
-            return iniciais;
-        }
+    /** Le o arquivo. Se ele ainda nao existe, cria o acervo de exemplo e grava. */
+    @SuppressWarnings("unchecked")
+    public Dados carregar() {
+        try {
+            ObjectInputStream entrada = new ObjectInputStream(new FileInputStream(ARQUIVO));
 
-        for (String[] campos : ler("ebooks.txt", 5)) {
-            catalogo.adicionarEBook(new EBook(campos[0], campos[1], Formato.valueOf(campos[2]),
-                    Categoria.valueOf(campos[3]), new Licenca(Integer.parseInt(campos[4]))));
+            Dados dados = new Dados();
+            dados.catalogo = (Catalogo) entrada.readObject();
+            dados.usuarios = (List<Usuario>) entrada.readObject();
+            dados.estatisticas = (SistemaEstatisticas) entrada.readObject();
+            entrada.close();
+
+            return dados;
+
+        } catch (Exception e) {
+            System.out.println("Primeira execucao: criando os dados iniciais em " + ARQUIVO + ".");
+            Dados dados = dadosIniciais();
+            salvar(dados.catalogo, dados.usuarios, dados.estatisticas);
+            return dados;
         }
-        for (String[] campos : ler("estantes.txt", 4)) {
-            Aluno aluno = buscarAluno(usuarios, campos[0]);
-            EBook ebook = catalogo.buscarPorTitulo(campos[1]);
-            if (aluno != null && ebook != null) {
-                aluno.getEstante().restaurar(new ItemEstante(ebook,
-                        TipoLeitura.valueOf(campos[2]), LocalDate.parse(campos[3])));
-            }
-        }
-        SistemaEstatisticas estatisticas = new SistemaEstatisticas();
-        for (String[] campos : ler("estatisticas.txt", 2)) {
-            estatisticas.restaurarAdicoes(campos[0], Integer.parseInt(campos[1]));
-        }
-        return new Dados(catalogo, usuarios, estatisticas);
     }
 
-    /**
-     * Acervo de exemplo usado quando a pasta dados/ ainda esta vazia. Nao ha regra de
-     * negocio aqui: e so carga para o sistema abrir com conteudo para demonstrar.
-     */
+    /** Acervo de exemplo, para o sistema abrir com conteudo na primeira execucao. */
     public Dados dadosIniciais() {
         LocalDate hoje = LocalDate.now();
+
         Catalogo catalogo = new Catalogo(hoje.getYear() + "/" + (hoje.getMonthValue() <= 6 ? 1 : 2));
         catalogo.adicionarPeriodo(new PeriodoAcesso(hoje.minusDays(30), hoje.plusDays(30)));
         catalogo.adicionarEBook(new EBook("Engenharia de Software", "Pearson",
@@ -141,57 +83,17 @@ public class BibliotecaRepositorioArquivo {
         catalogo.adicionarEBook(new EBook("Revista Brasileira de Computacao", "SBC",
                 Formato.PDF, Categoria.PERIODICO, new Licenca(1)));
 
-        List<Usuario> usuarios = new ArrayList<>(List.of(
-                new Bibliotecario("carla", "Carla Bibliotecaria", "123", "BIB-001"),
-                new Aluno("bruno", "Bruno Alves", "123", "2026001"),
-                new Aluno("ana", "Ana Souza", "123", "2026002"),
-                new Aluno("lucas", "Lucas Pereira", "123", "2026003"),
-                new Aluno("mariana", "Mariana Dias", "123", "2026004")));
-        return new Dados(catalogo, usuarios, new SistemaEstatisticas());
-    }
+        List<Usuario> usuarios = new ArrayList<>();
+        usuarios.add(new Bibliotecario("carla", "Carla Bibliotecaria", "123", "BIB-001"));
+        usuarios.add(new Aluno("bruno", "Bruno Alves", "123", "2026001"));
+        usuarios.add(new Aluno("ana", "Ana Souza", "123", "2026002"));
+        usuarios.add(new Aluno("lucas", "Lucas Pereira", "123", "2026003"));
+        usuarios.add(new Aluno("mariana", "Mariana Dias", "123", "2026004"));
 
-    private void escrever(String nome, List<String> linhas) throws IOException {
-        try (PrintWriter escritor = new PrintWriter(new FileWriter(arquivo(nome)))) {
-            linhas.forEach(escritor::println);
-        }
-    }
-
-    /** Le o arquivo e devolve as linhas ja separadas, descartando as incompletas. */
-    private List<String[]> ler(String nome, int minimoDeCampos) throws IOException {
-        List<String[]> registros = new ArrayList<>();
-        File arquivo = arquivo(nome);
-        if (!arquivo.exists()) {
-            return registros;
-        }
-        try (BufferedReader leitor = new BufferedReader(new FileReader(arquivo))) {
-            String linha;
-            while ((linha = leitor.readLine()) != null) {
-                String[] campos = linha.split(SEP);
-                if (campos.length >= minimoDeCampos) {
-                    registros.add(campos);
-                } else {
-                    System.out.println("Linha ignorada em " + nome + ": " + linha);
-                }
-            }
-        }
-        return registros;
-    }
-
-    /** Devolve o arquivo dentro da pasta de dados, criando a pasta se ainda nao existir. */
-    private File arquivo(String nome) throws IOException {
-        File pasta = new File(PASTA);
-        if (!pasta.exists() && !pasta.mkdirs()) {
-            throw new IOException("Nao foi possivel criar a pasta " + PASTA);
-        }
-        return new File(pasta, nome);
-    }
-
-    private Aluno buscarAluno(List<Usuario> usuarios, String matricula) {
-        for (Usuario usuario : usuarios) {
-            if (usuario instanceof Aluno aluno && aluno.getMatricula().equals(matricula)) {
-                return aluno;
-            }
-        }
-        return null;
+        Dados dados = new Dados();
+        dados.catalogo = catalogo;
+        dados.usuarios = usuarios;
+        dados.estatisticas = new SistemaEstatisticas();
+        return dados;
     }
 }

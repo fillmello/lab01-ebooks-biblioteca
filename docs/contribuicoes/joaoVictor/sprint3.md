@@ -17,10 +17,10 @@ Decisões: o cadastro lança `IllegalArgumentException` quando falta um dado obr
 título já existe no catálogo, porque é um erro de preenchimento que a interface precisa explicar ao
 bibliotecário; o menu captura a exceção e mostra a mensagem. `Catalogo.renovar` devolve um catálogo
 novo, do semestre seguinte, em vez de alterar o atual, para deixar claro na apresentação quais
-títulos renovaram a licença e quais saíram. Usei ponto e vírgula como separador dos campos, como
-sugere o roteiro, por ser simples de conferir e depurar, e o semestre e os períodos de acesso
-ficaram em um arquivo separado dos eBooks (`catalogo.txt`), porque mudam em ritmos diferentes: os
-períodos são poucos e definidos pela biblioteca, enquanto o catálogo cresce a cada cadastro. Ao
+títulos renovaram a licença e quais saíram. Na persistência trocamos o texto separado por
+ponto e vírgula pela serialização de objetos, outra estratégia do roteiro, porque o código de gravar
+e ler ficou bem menor; gravamos catálogo, usuários e estatísticas no mesmo arquivo para o eBook da
+estante continuar sendo o mesmo objeto do catálogo. Ao
 renovar, os títulos que perderam a licença saem também das estantes dos alunos, para não sobrar na
 estante um eBook que não está mais licenciado. O cadastro de usuários ficou no menu do
 bibliotecário porque o enunciado diz que é a equipe da biblioteca que mantém as informações sobre os

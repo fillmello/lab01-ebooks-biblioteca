@@ -1,11 +1,12 @@
 package br.edu.pucminas.biblioteca.modelo;
 
+import java.io.Serializable;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 
 /** Catalogo licenciado de um semestre (UC05 e UC08). */
-public class Catalogo {
+public class Catalogo implements Serializable {
 
     private static final int MINIMO_ALUNOS_RENOVACAO = 3;
 

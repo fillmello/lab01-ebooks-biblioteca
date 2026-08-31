@@ -1,7 +1,9 @@
 package br.edu.pucminas.biblioteca.modelo;
 
+import java.io.Serializable;
+
 /** Classe-base dos usuarios do sistema (UC01 - Realizar login). */
-public abstract class Usuario {
+public abstract class Usuario implements Serializable {
 
     private String id;
     private String nome;

@@ -17,9 +17,9 @@ de `Aluno.adicionarEBook`, logo depois de a adição dar certo, para garantir o 
 para UC07: assim nenhuma chamada da interface consegue adicionar um eBook sem registrar a
 estatística. Os métodos de estante retornam `boolean` em vez de lançar exceção, porque limite
 atingido e período fechado são respostas esperadas do fluxo, não erros de programação; a interface
-transforma o `false` em uma mensagem explicando o motivo. O arquivo de estantes guarda a matrícula
-do aluno e o título do eBook, e não os objetos inteiros, para não repetir dados que já estão em
-`usuarios.txt` e `ebooks.txt`.
+transforma o `false` em uma mensagem explicando o motivo. O título identifica o eBook no
+código, com `equals` e `hashCode` em `EBook`, para as comparações de estante e catálogo não
+dependerem de ser o mesmo objeto na memória.
 
 Uso de IA: usei o Claude (Anthropic) para revisar o tratamento de erros do menu, conferir se as
 regras dos casos 01 a 04 estavam de acordo com o enunciado e apoiar a estrutura da interface de

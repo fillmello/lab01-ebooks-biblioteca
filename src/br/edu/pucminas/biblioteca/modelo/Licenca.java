@@ -1,7 +1,9 @@
 package br.edu.pucminas.biblioteca.modelo;
 
+import java.io.Serializable;
+
 /** Licenca de uso de um eBook (UC04 - Acessar eBook). */
-public class Licenca {
+public class Licenca implements Serializable {
 
     /** Teto de acessos simultaneos a um mesmo eBook, definido no enunciado. */
     public static final int LIMITE_MAXIMO_SIMULTANEOS = 60;

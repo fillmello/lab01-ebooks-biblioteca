@@ -87,15 +87,16 @@ Nos dois casos o sistema recusa id, matrícula ou registro funcional já em uso.
 
 ### Persistência
 
-Os dados ficam em arquivos texto na pasta `dados/`, com campos separados por ponto e vírgula:
+Os dados ficam em `dados/biblioteca.dat`, gravado por serialização de objetos Java, uma das
+estratégias previstas no roteiro. O Java grava os objetos inteiros, então não é preciso montar nem
+separar texto na hora de ler.
 
-| Arquivo | Conteúdo |
-| --- | --- |
-| `catalogo.txt` | Semestre e períodos de acesso |
-| `ebooks.txt` | Título, editora, formato, categoria e limite da licença |
-| `usuarios.txt` | Perfil, id, nome, senha, matrícula ou registro funcional |
-| `estantes.txt` | Matrícula, título, tipo de leitura e data de adição |
-| `estatisticas.txt` | Título e total de adições a estantes |
+Catálogo, usuários e estatísticas vão no mesmo arquivo, e não em três, de propósito: assim o eBook
+que está na estante de um aluno continua sendo o **mesmo objeto** que está no catálogo, e a contagem
+de acessos simultâneos da licença bate nos dois lugares.
+
+O arquivo é binário, então não dá para conferir em um editor de texto. Se ele for apagado ou ficar
+ilegível, o sistema avisa e recria o acervo de exemplo.
 
 ## Distribuição de tarefas
 
