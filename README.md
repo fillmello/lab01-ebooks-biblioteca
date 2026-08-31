@@ -33,14 +33,59 @@ etapa do PlantUML, que é a versão vigente.
 
 ![Diagrama de classes](docs/diagramas/DiagramaClassesPuml.png)
 
-Cada classe é rastreável a um caso de uso da Sprint 1. Os métodos estão como stub, para serem
-implementados na Sprint 3.
+Cada classe é rastreável a um caso de uso da Sprint 1. Os stubs criados nesta sprint foram
+implementados na Sprint 3, e o diagrama foi atualizado para refletir o código entregue.
 
-Para compilar:
+## Sprint 3 (Lab01S03) — Protótipo funcional
+
+Protótipo executável de ponta a ponta: interface de linha de comando, regras de negócio do enunciado
+e persistência em arquivo texto.
+
+- Interface: [MenuPrincipal.java](src/br/edu/pucminas/biblioteca/MenuPrincipal.java)
+- Persistência: [src/br/edu/pucminas/biblioteca/persistencia/](src/br/edu/pucminas/biblioteca/persistencia/)
+- Comparação entre o que foi modelado e o que foi implementado: [docs/comparacao-modelo-implementacao.md](docs/comparacao-modelo-implementacao.md)
+
+### Como compilar e executar
 
 ```bash
-javac -d out $(find src -name '*.java')
+mkdir -p bin
+javac -d bin $(find src -name "*.java")
+java -cp bin br.edu.pucminas.biblioteca.MenuPrincipal
 ```
+
+Na primeira execução o sistema cria a pasta `dados/` com um catálogo e usuários de exemplo. A pasta
+não é versionada, então um clone limpo sempre começa com os mesmos dados. Todos os usuários de
+exemplo usam a senha `123`:
+
+| Login | Perfil |
+| --- | --- |
+| `carla` | Bibliotecária |
+| `bruno`, `ana`, `lucas`, `mariana` | Alunos |
+
+### Funcionalidades implementadas
+
+| Caso de uso | Onde aparece no menu | Regra aplicada |
+| --- | --- | --- |
+| UC01 Realizar login | Tela de login | Senha validada em `Usuario.autenticar` |
+| UC02 Adicionar eBook à estante | Menu do aluno, opção 2 | Até 4 obrigatórios e 2 livres, só com o período de acesso aberto |
+| UC03 Remover eBook da estante | Menu do aluno, opção 3 | Só com o período de acesso aberto; a vaga do tipo volta a ficar livre |
+| UC04 Acessar eBook | Menu do aluno, opções 5 e 6 | Bloqueia ao atingir o limite de acessos simultâneos da licença (máximo 60) |
+| UC05 Cadastrar eBook | Menu do bibliotecário, opção 1 | Exige título, editora, formato e categoria, e recusa título repetido |
+| UC06 Consultar alunos com um eBook | Menu do bibliotecário, opção 4 | Lista os alunos que têm o título na estante |
+| UC07 Registrar estatística de uso | Menu do bibliotecário, opção 5 | Toda adição à estante notifica `SistemaEstatisticas` |
+| UC08 Renovar catálogo do semestre | Menu do bibliotecário, opção 6 | Mantém apenas os títulos presentes em 3 ou mais estantes |
+
+### Persistência
+
+Os dados ficam em arquivos texto na pasta `dados/`, com campos separados por ponto e vírgula:
+
+| Arquivo | Conteúdo |
+| --- | --- |
+| `catalogo.txt` | Semestre e períodos de acesso |
+| `ebooks.txt` | Título, editora, formato, categoria e limite da licença |
+| `usuarios.txt` | Perfil, id, nome, senha, matrícula ou registro funcional |
+| `estantes.txt` | Matrícula, título, tipo de leitura e data de adição |
+| `estatisticas.txt` | Título e total de adições a estantes |
 
 ## Distribuição de tarefas
 
@@ -61,6 +106,15 @@ Mantida a mesma divisão da Sprint 1:
 | --- | --- | --- |
 | Filipe Melo | `ItemEstante o-- EBook` | Usuario, Aluno, Estante, ItemEstante, Licenca, TipoLeitura |
 | João Victor | `Catalogo o-- EBook` | Bibliotecario, EBook, Catalogo, PeriodoAcesso, SistemaEstatisticas, Formato, Categoria |
+
+### Sprint 3, funcionalidades implementadas
+
+Mantida a mesma divisão das sprints anteriores:
+
+| Integrante | Funcionalidades | Classes implementadas |
+| --- | --- | --- |
+| Filipe Melo | 01 Realizar login, 02 Adicionar eBook à estante, 03 Remover eBook da estante, 04 Acessar eBook | Usuario, Aluno, Estante, Licenca, EstanteRepositorioArquivo, UsuarioRepositorioArquivo, login e menu do aluno em MenuPrincipal |
+| João Victor | 05 Cadastrar eBook, 06 Consultar alunos com um eBook, 07 Registrar estatística de uso, 08 Renovar catálogo do semestre | Bibliotecario, EBook, Catalogo, PeriodoAcesso, SistemaEstatisticas, CatalogoRepositorioArquivo, EBookRepositorioArquivo, EstatisticasRepositorioArquivo, menu do bibliotecário em MenuPrincipal |
 
 O registro semanal de cada integrante fica em [docs/contribuicoes/](docs/contribuicoes/), um arquivo
 por sprint.
