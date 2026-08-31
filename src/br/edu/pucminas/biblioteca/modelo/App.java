@@ -643,12 +643,7 @@ public class App {
 
         System.out.println("===== CADASTRAR ALUNO =====");
 
-        // FIXME
-        // System.out.print("ID: ");
-        // String id = scanner.nextLine();
         String nome = "";
-        
-
         do {
             System.out.print("Nome: ");
             nome = scanner.nextLine();
@@ -673,13 +668,7 @@ public class App {
     }
 
     public static Bibliotecario criarBibliotecario(String id) {
-
         System.out.println("===== CADASTRAR BIBLIOTECÁRIO =====");
-
-        // FIXME
-        // System.out.print("ID: ");
-        // String id = scanner.nextLine();
-
         String nome = "";
         
         do {
