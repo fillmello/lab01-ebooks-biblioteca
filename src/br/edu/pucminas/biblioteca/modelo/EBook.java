@@ -36,4 +36,26 @@ public class EBook {
     public Licenca getLicenca() {
         return licenca;
     }
+
+    /** O titulo identifica o eBook, inclusive nos arquivos de dados. */
+    @Override
+    public boolean equals(Object outro) {
+        if (this == outro) {
+            return true;
+        }
+        if (!(outro instanceof EBook)) {
+            return false;
+        }
+        return titulo.equalsIgnoreCase(((EBook) outro).titulo);
+    }
+
+    @Override
+    public int hashCode() {
+        return titulo.toLowerCase().hashCode();
+    }
+
+    @Override
+    public String toString() {
+        return titulo + " (" + editora + ", " + formato + ", " + categoria + ")";
+    }
 }

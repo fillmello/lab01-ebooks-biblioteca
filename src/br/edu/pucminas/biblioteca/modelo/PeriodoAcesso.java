@@ -9,17 +9,26 @@ public class PeriodoAcesso {
     private LocalDate dataFim;
 
     public PeriodoAcesso(LocalDate dataInicio, LocalDate dataFim) {
+        if (dataInicio == null || dataFim == null || dataFim.isBefore(dataInicio)) {
+            throw new IllegalArgumentException("A data de fim deve ser igual ou posterior a de inicio");
+        }
         this.dataInicio = dataInicio;
         this.dataFim = dataFim;
     }
 
     public boolean estaAberto(LocalDate data) {
-        // TODO: implementar na Sprint 3
-        return false;
+        return data != null && !data.isBefore(dataInicio) && !data.isAfter(dataFim);
     }
 
     public boolean jaEncerrou(LocalDate data) {
-        // TODO: implementar na Sprint 3
-        return false;
+        return data != null && data.isAfter(dataFim);
+    }
+
+    public LocalDate getDataInicio() {
+        return dataInicio;
+    }
+
+    public LocalDate getDataFim() {
+        return dataFim;
     }
 }
